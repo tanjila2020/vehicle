@@ -11,7 +11,7 @@ bit_depth = 30  # in bit
 data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
 bandwidth = 1000  # in Mbps (megabit)
 no_of_ins = 1000  # in millions
-period = 30
+period = 40
 deadline = period
 
 # calculating local and edge capacity
@@ -35,7 +35,7 @@ transfer_time = math.ceil((data_size/transfer_rate)*1000)  # in millisecond
 # print(edge_execution_time)
 # print(local_execution_time)
 # print(data_size)
-print(transfer_time)
+# print(transfer_time)
 
 vehicle = namedtuple(
     'vehicle', 'name no_of_ins data_size edge_exe_time transfer_time period deadline')
@@ -84,12 +84,19 @@ def create_queue(vehicles, time_span):
     return queue
 
 
-span = reduce(lambda a, b: a + b, [vehicle.period for vehicle in vehicle_list])
+span = reduce(lambda a, b: (a + b)*80, [vehicle.period for vehicle in vehicle_list])
 queue = create_queue(vehicle_list, span)
 vehicle_period_map = {vehicle.name: vehicle.period for vehicle in vehicle_list}
 cpu_current_time = 0
+discarded_job = []
 
 for vehicle in queue:
+    if vehicle.name in discarded_job:
+        print(discarded_job)
+        print('ignored ', vehicle)
+        discarded_job.remove(vehicle.name)
+        continue
+
     vehicle = vehicle._replace(start_time=max(
         vehicle.start_time, cpu_current_time))
     vehicle_end_time = vehicle.start_time + vehicle.edge_exe_time
@@ -108,11 +115,12 @@ for vehicle in queue:
 
     if not deadline_missed:
         period = (vehicle.job_no - 1) * vehicle_period_map[vehicle.name]
-        response_time = vehicle_end_time - period
+        #response_time = vehicle_end_time - period
         cpu_current_time = vehicle_end_time
         print(job)
     else:
-        job = job._replace(start_time=(vehicle.job_no - 1)
-                           * vehicle_period_map[vehicle.name])
-        #print('\n\n -- offloaded')
+        period = (vehicle.job_no - 1) * vehicle_period_map[vehicle.name]
+        #response_time = vehicle_end_time - period
+        cpu_current_time = vehicle_end_time
+        discarded_job.append(job.name)
         print('---------', job)
