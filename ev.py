@@ -1,6 +1,8 @@
 import math
 from collections import namedtuple
 from functools import reduce
+from random import shuffle
+from IPython import embed
 
 no_of_servers = 3
 no_of_ap = 10
@@ -80,11 +82,16 @@ def create_queue(vehicles, time_span):
         vehicle_counter.append(queue[i].name)
         task_count = vehicle_counter.count(queue[i].name)
         queue[i] = queue[i]._replace(job_no=task_count)
-
+    # embed()
+    for i in range(0, len(queue), no_of_vehicles):
+        sublist = queue[i: i + no_of_vehicles]
+        shuffle(sublist)
+        queue[i: i + no_of_vehicles] = sublist
+    # print(queue)
     return queue
 
 
-span = reduce(lambda a, b: (a + b)*80, [vehicle.period for vehicle in vehicle_list])
+span = sum([vehicle.period for vehicle in vehicle_list])
 queue = create_queue(vehicle_list, span)
 vehicle_period_map = {vehicle.name: vehicle.period for vehicle in vehicle_list}
 cpu_current_time = 0
