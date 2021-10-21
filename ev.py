@@ -3,6 +3,7 @@ from collections import namedtuple
 from functools import reduce
 from random import shuffle
 from IPython import embed
+import pandas as pd
 
 no_of_servers = 3
 no_of_ap = 10
@@ -96,12 +97,23 @@ queue = create_queue(vehicle_list, span)
 vehicle_period_map = {vehicle.name: vehicle.period for vehicle in vehicle_list}
 cpu_current_time = 0
 discarded_job = []
+data = {
+    "name": [],
+    "job_no": [],
+    "response_time": [],
+}
+response_time_df = pd.DataFrame(data)
+ignored_jobs_df = pd.DataFrame({"name": [], "job": []})
 
 for vehicle in queue:
     if vehicle.name in discarded_job:
         print(discarded_job)
         print('ignored ', vehicle)
         discarded_job.remove(vehicle.name)
+        ignored_jobs_df = ignored_jobs_df.append({
+            'name': vehicle.name,
+            'job': vehicle.job_no
+        }, ignore_index=True)
         continue
 
     vehicle = vehicle._replace(start_time=max(
@@ -120,6 +132,12 @@ for vehicle in queue:
               deadline_missed=deadline_missed,
               job_no=vehicle.job_no)
 
+    response_time_df = response_time_df.append({
+        'name': vehicle.name,
+        'job_no': vehicle.job_no,
+        'response_time': vehicle_end_time - vehicle.start_time + vehicle.transfer_time,
+    }, ignore_index=True)
+
     if not deadline_missed:
         period = (vehicle.job_no - 1) * vehicle_period_map[vehicle.name]
         #response_time = vehicle_end_time - period
@@ -131,3 +149,19 @@ for vehicle in queue:
         cpu_current_time = vehicle_end_time
         discarded_job.append(job.name)
         print('---------', job)
+
+# print(response_time_df)
+
+average_response_time = response_time_df[[
+    'name', 'response_time']].groupby(['name']).mean()
+
+print(average_response_time)
+# response_time_df.loc[(response_time_df['name'] == 'v5') & (response_time_df['job_no'] == 5.0)]
+
+# print(ignored_jobs_df)
+
+ignored_job_count = ignored_jobs_df.groupby(['name']).size()
+
+print(ignored_job_count)
+
+# embed()
