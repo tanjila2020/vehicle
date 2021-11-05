@@ -2,6 +2,7 @@ import math
 from collections import namedtuple
 from functools import reduce
 from random import shuffle
+import random
 from IPython import embed
 import pandas as pd
 
@@ -30,6 +31,13 @@ local_execution_time = math.ceil(
 edge_speed_factor = 7
 edge_execution_time = math.ceil(
     local_execution_time/edge_speed_factor)  # in millisecond
+
+#-------calculating transfer rate from paper model-------------#
+d= 1 # in kilometer
+p= random.randint(20,30) #Transmission power of each vehicle in(dBm)
+h= 127+30(math.log(d,(2))) # channel gain, d is in km
+white_noise= 2*10**-13 #white gaussian noise in watt 
+n    
 
 # calculating transfer time
 transfer_rate = (bandwidth*no_of_ap)/no_of_vehicles
