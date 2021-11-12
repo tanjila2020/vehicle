@@ -43,8 +43,14 @@ white_noise= 2*10**-13 #white gaussian noise in watt
 data_size = np.random.uniform(0.4, 0.8) #in megabits
 bandwidth = 100 #in Mbps which is equal to 25MHz
 snr= p*h/white_noise
+
+print("SNR")
+print (snr)
 n_i = (math.log((1+snr),(2))) #uplink spectral efficiency
 transfer_rate = (bandwidth*no_of_ap *n_i)/no_of_vehicles
+transfer_rate = round(transfer_rate,2) 
+print("transfer_rate")
+print (transfer_rate)
 
 
 
