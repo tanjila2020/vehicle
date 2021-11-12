@@ -1,4 +1,5 @@
 import math
+import numpy as np
 from collections import namedtuple
 from functools import reduce
 from random import shuffle
@@ -9,11 +10,13 @@ import pandas as pd
 no_of_servers = 3
 no_of_ap = 10
 no_of_vehicles = 5
-data_height = 200  # inpixel
-data_width = 300  # inpixel
-bit_depth = 30  # in bit
-data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
-bandwidth = 1000  # in Mbps (megabit)
+##parameter to calculate data size from sanaz paper
+# data_height = 200  # inpixel
+# data_width = 300  # inpixel
+# bit_depth = 30  # in bit
+# data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
+
+# bandwidth = 1000  # in Mbps (megabit) this is when we consider equal share(simple model to calc transfer rate)
 no_of_ins = 1000  # in millions
 period = 40
 deadline = period
@@ -33,20 +36,27 @@ edge_execution_time = math.ceil(
     local_execution_time/edge_speed_factor)  # in millisecond
 
 #-------calculating transfer rate from paper model-------------#
-d= 1 # in kilometer
+d= 2 # in kilometer
 p= random.randint(20,30) #Transmission power of each vehicle in(dBm)
-h= 127+30(math.log(d,(2))) # channel gain, d is in km
+h= 127+30*(math.log(d,(2))) # channel gain, d is in km
 white_noise= 2*10**-13 #white gaussian noise in watt 
-n    
+data_size = np.random.uniform(0.4, 0.8) #in megabits
+bandwidth = 100 #in Mbps which is equal to 25MHz
+snr= p*h/white_noise
+n_i = (math.log((1+snr),(2))) #uplink spectral efficiency
+transfer_rate = (bandwidth*no_of_ap *n_i)/no_of_vehicles
+
+
 
 # calculating transfer time
-transfer_rate = (bandwidth*no_of_ap)/no_of_vehicles
+#transfer_rate = (bandwidth*no_of_ap)/no_of_vehicles
 transfer_time = math.ceil((data_size/transfer_rate)*1000)  # in millisecond
 
-# print(edge_execution_time)
-# print(local_execution_time)
-# print(data_size)
-# print(transfer_time)
+print(edge_execution_time)
+print(local_execution_time)
+print(data_size)
+print(transfer_time)
+exit()
 
 vehicle = namedtuple(
     'vehicle', 'name no_of_ins data_size edge_exe_time transfer_time period deadline')
