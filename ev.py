@@ -34,6 +34,9 @@ local_execution_time = math.ceil(no_of_ins/local_cpu_capacity)  # in millisecond
 edge_speed_factor = 3
 edge_execution_time = math.ceil(local_execution_time/edge_speed_factor)  # in millisecond
 
+print("edge execution time:", edge_execution_time)
+
+
 # read vehicle data from csv
 df = pd.read_csv('first_output.csv', index_col='#')
 csv_length = len(df)
@@ -47,7 +50,7 @@ df['transfer_time'] = None
 time_array = df['time'].unique()
 no_of_vehicles = len(df['name'].unique())
 temp_no_of_vehicles = 500
-# print('no_of_vehicles', no_of_vehicles)
+print('no_of_vehicles', no_of_vehicles)
 
 
 #for a particular time, calculating transfer_time for all vehicles
@@ -61,20 +64,27 @@ for time in time_array:
             d = row['distance']  # in kilometer
             # Transmission power of each vehicle in(dBm)
             p = random.randint(20, 30)
-            h = 127+30*(math.log(d, (2)))  # channel gain, d is in km
+            h = 127+30*(math.log(d, (10)))  # channel gain, d is in km
             white_noise = 2*10**-13  # white gaussian noise in watt
             # data_size = np.random.uniform(0.4, 0.8) #in megabits
-            data_size = 1.8  # in megabits
-            bandwidth = 100  # in Mbps which is equal to 25MHz
+            data_size = 1.8*10**6  # in bits
+            bandwidth = 20*10**6  # in Hz
             snr = p*h/white_noise
-            n_i = (math.log((1+snr), (2)))  # uplink spectral efficiency
-            transfer_rate = (bandwidth*no_of_ap * n_i) / temp_no_of_vehicles
-            transfer_rate = round(transfer_rate, 2)
-            #transfer_rate = (bandwidth*no_of_ap)/no_of_vehicles
-            transfer_time = math.ceil((data_size/transfer_rate)*1000)  # in millisecond
+            n_i = (math.log((1+snr), (10)))  # uplink spectral efficiency in (bits/(sec* Hz))
+            
+            transfer_rate1 = (bandwidth*no_of_ap * n_i) / no_of_vehicles #(in bits per sec)
+            transfer_rate1 = round(transfer_rate1, 2)
+            #n_i2 = (math.log((1+(p*127/white_noise)), (10))) 
+            #transfer_rate2 = (bandwidth*no_of_ap)*n_i2/no_of_vehicles
+            transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
+            #print("transfer rate1", transfer_rate1)
+            #print("transfer rate2", transfer_rate2)
+            
+            transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
             df.at[i, 'transfer_time'] = transfer_time
 
 print(df[1:5])
+exit()
 # print(edge_execution_time)
 # print(local_execution_time)
 # print(data_size)
