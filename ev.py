@@ -8,15 +8,15 @@ from IPython import embed
 import pandas as pd
 
 ##parameter value
-no_of_servers = 3
-no_of_ap = 5
+no_of_servers = 50
+no_of_ap = 40
 # parameter to calculate data size from sanaz paper
-# data_height = 200  # inpixel
-# data_width = 300  # inpixel
-# bit_depth = 30  # in bit
-# data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
+data_height = 200  # inpixel
+data_width = 300  # inpixel
+bit_depth = 30  # in bit
+data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
 
-# bandwidth = 1000  # in Mbps (megabit) this is when we consider equal share(simple model to calc transfer rate)
+bandwidth = 1000  # in Mbps (megabit) this is when we consider equal share(simple model to calc transfer rate)
 no_of_ins = 3000  # in millions
 period = 200
 
@@ -41,7 +41,7 @@ print("local_cpu_capacity:", local_cpu_capacity)
 
 # read vehicle data from csv
 #df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('1am.csv')
+df = pd.read_csv('7am.csv')
 csv_length = len(df)
 
 # new column made in csv
@@ -50,49 +50,55 @@ df['transfer_time'] = None
 # df['no_of_jobs_dropped'] = None
 
 ## finding unique timestamp to get the total no of vehicles in that time 
-thresold = 10
+thresold = 1
 time_array = df['time'].unique()[:thresold]
 print(time_array)
 # no_of_vehicles = len(df['name'].unique())
 no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
-temp_no_of_vehicles = 500
+temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
 print('no_of_vehicles', no_of_vehicles)
+print('temp_no_of_vehicles', temp_no_of_vehicles)
 
-exit()
+
 
 
 #for a particular time, calculating transfer_time for all vehicles
 for time in time_array:
-    if time == 29072:
+    if time == time_array[0]:
         # select the rows with the timestamp of sec
         matched_loc = df.loc[df['time'] == time]
         no_of_vehicle = matched_loc['name']
 
         for i, row in df.loc[df['time'] == time].iterrows():
-            d = row['distance']  # in kilometer
-            # Transmission power of each vehicle in(dBm)
-            p = random.randint(20, 30)
-            h = 127+30*(math.log(d, (10)))  # channel gain, d is in km
-            white_noise = 2*10**-13  # white gaussian noise in watt
-            # data_size = np.random.uniform(0.4, 0.8) #in megabits
-            data_size = 1.8*10**6  # in bits
-            bandwidth = 20*10**6  # in Hz
-            snr = p*h/white_noise
-            n_i = (math.log((1+snr), (10)))  # uplink spectral efficiency in (bits/(sec* Hz))
+            # d = row['distance']  # in kilometer
+            # # Transmission power of each vehicle in(dBm)
+            # p = random.randint(20, 30)
+            # h = 127+30*(math.log(d, (10)))  # channel gain, d is in km
+            # white_noise = 2*10**-13  # white gaussian noise in watt
+            # # data_size = np.random.uniform(0.4, 0.8) #in megabits
+            # data_size = 1.8*10**6  # in bits
+            # bandwidth = 20*10**6  # in Hz
+            # snr = p*h/white_noise
+            # n_i = (math.log((1+snr), (10)))  # uplink spectral efficiency in (bits/(sec* Hz))
             
-            transfer_rate1 = (bandwidth*no_of_ap * n_i) / no_of_vehicles #(in bits per sec)
-            transfer_rate1 = round(transfer_rate1, 2)
+            # transfer_rate1 = (bandwidth*no_of_ap * n_i) / no_of_vehicles #(in bits per sec)
+            # transfer_rate1 = round(transfer_rate1, 2)
             #n_i2 = (math.log((1+(p*127/white_noise)), (10))) 
             #transfer_rate2 = (bandwidth*no_of_ap)*n_i2/no_of_vehicles
-            transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
+            transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
             #print("transfer rate1", transfer_rate1)
             #print("transfer rate2", transfer_rate2)
             
             transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
             df.at[i, 'transfer_time'] = transfer_time
-exit()
-print(df[1:5])
-exit()
+
+transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
+transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
+print("transfer time:", transfer_time) 
+          
+
+#print(df[1:5])
+
 # print(edge_execution_time)
 # print(local_execution_time)
 # print(data_size)
@@ -103,7 +109,7 @@ vehicle = namedtuple(
     'vehicle', 'name no_of_ins data_size edge_exe_time transfer_time period deadline')
 vehicle_list = []
 
-for i, row in df.loc[df['time'] == 29072][0:temp_no_of_vehicles].iterrows():
+for i, row in df.loc[df['time'] == time_array[0]][0:temp_no_of_vehicles].iterrows():
     v = vehicle(
         name=row['name'],
         no_of_ins=no_of_ins,
@@ -146,15 +152,15 @@ def create_queue(vehicles, time_span):
         task_count = vehicle_counter.count(queue[i].name)
         queue[i] = queue[i]._replace(job_no=task_count)
     # embed()
-    for i in range(0, len(queue), no_of_vehicles):
-        sublist = queue[i: i + no_of_vehicles]
+    for i in range(0, len(queue), temp_no_of_vehicles):
+        sublist = queue[i: i + temp_no_of_vehicles]
         shuffle(sublist)
-        queue[i: i + no_of_vehicles] = sublist
+        queue[i: i + temp_no_of_vehicles] = sublist
     # print(queue)
     return queue
 
 
-span = 1000
+span = period*temp_no_of_vehicles
 #span = sum([vehicle.period for vehicle in vehicle_list])
 queue = create_queue(vehicle_list, span)
 vehicle_period_map = {vehicle.name: vehicle.period for vehicle in vehicle_list}
