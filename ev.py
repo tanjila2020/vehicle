@@ -17,8 +17,8 @@ no_of_ap = 5
 # data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
 
 # bandwidth = 1000  # in Mbps (megabit) this is when we consider equal share(simple model to calc transfer rate)
-no_of_ins = 1000  # in millions
-period = 100
+no_of_ins = 3000  # in millions
+period = 200
 
 deadline = period
 
@@ -31,14 +31,17 @@ no_of_cores = 1
 local_cpu_capacity = math.ceil(((v * (freq*1000) + o) * no_of_cores) * 0.001)
 #local_cpu_speed = math.floor(local_cpu_speed)
 local_execution_time = math.ceil(no_of_ins/local_cpu_capacity)  # in millisecond
-edge_speed_factor = 3
+edge_speed_factor = 15
 edge_execution_time = math.ceil(local_execution_time/edge_speed_factor)  # in millisecond
 
 print("edge execution time:", edge_execution_time)
+print("local execution time:", local_execution_time)
+print("local_cpu_capacity:", local_cpu_capacity)
 
 
 # read vehicle data from csv
-df = pd.read_csv('first_output.csv', index_col='#')
+#df = pd.read_csv('first_output.csv', index_col='#')
+df = pd.read_csv('1am.csv')
 csv_length = len(df)
 
 # new column made in csv
@@ -47,10 +50,15 @@ df['transfer_time'] = None
 # df['no_of_jobs_dropped'] = None
 
 ## finding unique timestamp to get the total no of vehicles in that time 
-time_array = df['time'].unique()
-no_of_vehicles = len(df['name'].unique())
+thresold = 10
+time_array = df['time'].unique()[:thresold]
+print(time_array)
+# no_of_vehicles = len(df['name'].unique())
+no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
 temp_no_of_vehicles = 500
 print('no_of_vehicles', no_of_vehicles)
+
+exit()
 
 
 #for a particular time, calculating transfer_time for all vehicles
@@ -82,7 +90,7 @@ for time in time_array:
             
             transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
             df.at[i, 'transfer_time'] = transfer_time
-
+exit()
 print(df[1:5])
 exit()
 # print(edge_execution_time)

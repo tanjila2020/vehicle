@@ -1,12 +1,13 @@
 import pandas as pd
 from IPython import embed
 
-time_slots = [10800, 18000, 21600]
+#time_slots = [10800, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200, 46800, 50400, 54000, 57600, 61200, 64800, 68400, 75600, 79200, 82800 ]
+time_slots =[3646]
 offset = 0
 no_of_rows = 1000000
 time = 0
 
-while time < 23000:
+while time < 8000:
     df = pd.read_csv("koln-pruned.tr",
                     skiprows=offset, nrows=no_of_rows, header=None, delimiter=' ',
                     names=['time', "name", 'x', 'y', 'speed'],
@@ -18,7 +19,7 @@ while time < 23000:
 
     print(int(start_time), int(end_time))
 
-    filtered_times = [time for time in time_slots if start_time <= time and time <= end_time]
+    filtered_times = [time for time in time_slots if time >= start_time and time <= end_time]
     print(filtered_times)
 
     for ft in filtered_times:
