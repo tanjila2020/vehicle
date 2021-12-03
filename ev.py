@@ -41,7 +41,7 @@ print("local_cpu_capacity:", local_cpu_capacity)
 
 # read vehicle data from csv
 #df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('7am.csv')
+df = pd.read_csv('10pm.csv')
 csv_length = len(df)
 
 # new column made in csv
@@ -50,7 +50,7 @@ df['transfer_time'] = None
 # df['no_of_jobs_dropped'] = None
 
 ## finding unique timestamp to get the total no of vehicles in that time 
-thresold = 1
+thresold = 900
 time_array = df['time'].unique()[:thresold]
 print(time_array)
 # no_of_vehicles = len(df['name'].unique())
@@ -58,6 +58,7 @@ no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
 temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
 print('no_of_vehicles', no_of_vehicles)
 print('temp_no_of_vehicles', temp_no_of_vehicles)
+exit()
 
 
 
