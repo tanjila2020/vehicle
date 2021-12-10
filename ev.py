@@ -8,21 +8,17 @@ from IPython import embed
 import pandas as pd
 
 ##parameter value
-no_of_ap =6# parameter to calculate data size from sanaz paper
-no_of_servers = 54
+no_of_ap = 6# parameter to calculate data size from sanaz paper
+no_of_servers = 20
 #no_of_vehicles= 25
-
 data_height = 200  # inpixel
 data_width = 300  # inpixel
 bit_depth = 30  # in bit
 data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
-
 bandwidth = 1000  # in Mbps (megabit) this is when we consider equal share(simple model to calc transfer rate)
 no_of_ins = 3000  # in millions
 period = 200
-
 deadline = period
-
 # calculating local and edge capacity
 v = 7.683
 o = -4558.52
@@ -39,10 +35,9 @@ print("edge execution time:", edge_execution_time)
 print("local execution time:", local_execution_time)
 #print("local_cpu_capacity:", local_cpu_capacity)
 
-
 # read vehicle data from csv
 #df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('11pm.csv')
+df = pd.read_csv('5am.csv')
 csv_length = len(df)
 
 # new column made in csv
@@ -60,7 +55,6 @@ vehicle_name_array = df['name'].unique()
 max_time= np.amax(time_array)
 print('max time', max_time)
 min_time= np.amin(time_array)
-
 no_of_vehicles = len(vehicle_name_array)
 #no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
 #no_of_vehicles= 231
@@ -68,7 +62,6 @@ no_of_vehicles = len(vehicle_name_array)
 temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
 print('no_of_vehicles', no_of_vehicles)
 print('temp_no_of_vehicles', temp_no_of_vehicles)
-
 
 #for a particular time, calculating transfer_time for all vehicles
 # for time in time_array:
@@ -228,26 +221,17 @@ for vehicle in queue:
         # print('---------', job)
 
 # print(response_time_df)
-
-average_response_time = response_time_df[[
-    'name', 'response_time']].groupby(['name']).mean()
-
-
-
+average_response_time = response_time_df[['name', 'response_time']].groupby(['name']).mean()
 print('Average response time\n', average_response_time)
 total_avg_res_time = response_time_df['response_time'].mean()
-
-
 # response_time_df.loc[(response_time_df['name'] == 'v5') & (response_time_df['job_no'] == 5.0)]
-
 # print(ignored_jobs_df)
-
 ignored_job_count = ignored_jobs_df.groupby(['name']).size().reset_index(name='jobs_dropped')
-
 print('No of jobs dropped\n', ignored_job_count)
-
 #avg_job_drop = ignored_jobs_df['jobs_dropped'].mean()
 print('total average response time is:  ', total_avg_res_time)
+print('Total jobs:', len(queue))
+print('Sum of jobs dropped:', ignored_job_count['jobs_dropped'].sum())
 print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
 #print('Average no of jobs dropped:  ', avg_job_drop )
 
