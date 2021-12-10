@@ -8,9 +8,8 @@ from IPython import embed
 import pandas as pd
 
 ##parameter value
-no_of_servers = 50
-no_of_ap = 40
-# parameter to calculate data size from sanaz paper
+no_of_servers = 36
+no_of_ap =10# parameter to calculate data size from sanaz paper
 data_height = 200  # inpixel
 data_width = 300  # inpixel
 bit_depth = 30  # in bit
@@ -41,7 +40,7 @@ print("local_cpu_capacity:", local_cpu_capacity)
 
 # read vehicle data from csv
 #df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('10pm.csv')
+df = pd.read_csv('7am.csv')
 csv_length = len(df)
 
 # new column made in csv
@@ -52,20 +51,31 @@ df['transfer_time'] = None
 ## finding unique timestamp to get the total no of vehicles in that time 
 thresold = 900
 time_array = df['time'].unique()[:thresold]
-print(time_array)
+vehicle_name_array = df['name'].unique()[:thresold]
+print(vehicle_name_array)
+print(len(vehicle_name_array))
+#print(time_array)
+max_time= np.amax(time_array)
+print(max_time)
+
+min_time= np.amin(time_array)
+exit()
+
 # no_of_vehicles = len(df['name'].unique())
-no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
+#no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
+no_of_vehicles = 25
 temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
 print('no_of_vehicles', no_of_vehicles)
 print('temp_no_of_vehicles', temp_no_of_vehicles)
-exit()
+
+
 
 
 
 
 #for a particular time, calculating transfer_time for all vehicles
 for time in time_array:
-    if time == time_array[0]:
+    if (time <= min_time) and (time>= max_time):
         # select the rows with the timestamp of sec
         matched_loc = df.loc[df['time'] == time]
         no_of_vehicle = matched_loc['name']
@@ -96,6 +106,7 @@ for time in time_array:
 transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
 transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
 print("transfer time:", transfer_time) 
+
           
 
 #print(df[1:5])
@@ -225,13 +236,22 @@ for vehicle in queue:
 average_response_time = response_time_df[[
     'name', 'response_time']].groupby(['name']).mean()
 
+
+
 print('Average response time\n', average_response_time)
+total_avg_res_time = response_time_df['response_time'].mean()
+
+
 # response_time_df.loc[(response_time_df['name'] == 'v5') & (response_time_df['job_no'] == 5.0)]
 
 # print(ignored_jobs_df)
 
-ignored_job_count = ignored_jobs_df.groupby(['name']).size()
+ignored_job_count = ignored_jobs_df.groupby(['name']).size().reset_index(name='jobs_dropped')
 
 print('No of jobs dropped\n', ignored_job_count)
+
+#avg_job_drop = ignored_jobs_df['jobs_dropped'].mean()
+print('total average response time is:  ', total_avg_res_time)
+#print('Average no of jobs dropped:  ', avg_job_drop )
 
 # embed()
