@@ -241,7 +241,7 @@ total_avg_res_time = response_time_df['response_time'].mean()
 ignored_job_count = ignored_jobs_df.groupby(['name']).size().reset_index(name='jobs_dropped')
 
 print('No of jobs dropped\n', ignored_job_count)
-
+print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
 #avg_job_drop = ignored_jobs_df['jobs_dropped'].mean()
 print('total average response time is:  ', total_avg_res_time)
 #print('Average no of jobs dropped:  ', avg_job_drop )
