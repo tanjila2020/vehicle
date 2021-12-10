@@ -8,9 +8,9 @@ from IPython import embed
 import pandas as pd
 
 ##parameter value
-no_of_ap =10# parameter to calculate data size from sanaz paper
-no_of_servers = 2
-no_of_vehicles= 25
+no_of_ap =6# parameter to calculate data size from sanaz paper
+no_of_servers = 54
+#no_of_vehicles= 25
 
 data_height = 200  # inpixel
 data_width = 300  # inpixel
@@ -42,7 +42,7 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 #df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('5am.csv')
+df = pd.read_csv('11pm.csv')
 csv_length = len(df)
 
 # new column made in csv
@@ -55,18 +55,20 @@ thresold = 900
 time_array = df['time'].unique()[:thresold]
 vehicle_name_array = df['name'].unique()
 # print(vehicle_name_array)
-print('total no of vehicles', len(vehicle_name_array))
+#print('total no of vehicles', len(vehicle_name_array))
 #print(time_array)
 max_time= np.amax(time_array)
 print('max time', max_time)
 min_time= np.amin(time_array)
 
-# no_of_vehicles = len(df['name'].unique())
+no_of_vehicles = len(vehicle_name_array)
 #no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
+#no_of_vehicles= 231
 
 temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
 print('no_of_vehicles', no_of_vehicles)
 print('temp_no_of_vehicles', temp_no_of_vehicles)
+
 
 #for a particular time, calculating transfer_time for all vehicles
 # for time in time_array:
