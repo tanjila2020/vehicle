@@ -1,13 +1,13 @@
 import pandas as pd
 from IPython import embed
 
-#time_slots = [10800, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200, 46800, 50400, 54000, 57600, 61200, 64800, 68400, 75600, 79200, 82800 ]
-time_slots =[3646]
+time_slots = [3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200, 46800, 50400, 54000, 57600, 61200, 64800, 68400, 72000, 75600, 79200, 82800 ]
+
 offset = 0
-no_of_rows = 1000000
+no_of_rows =3000000
 time = 0
 
-while time < 8000:
+while time < 90000:
     df = pd.read_csv("koln-pruned.tr",
                     skiprows=offset, nrows=no_of_rows, header=None, delimiter=' ',
                     names=['time', "name", 'x', 'y', 'speed'],
