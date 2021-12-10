@@ -8,7 +8,7 @@ from IPython import embed
 import pandas as pd
 
 ##parameter value
-no_of_servers = 36
+no_of_servers = 2
 no_of_ap =10# parameter to calculate data size from sanaz paper
 data_height = 200  # inpixel
 data_width = 300  # inpixel
@@ -40,7 +40,7 @@ print("local_cpu_capacity:", local_cpu_capacity)
 
 # read vehicle data from csv
 #df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('7am.csv')
+df = pd.read_csv('5am.csv')
 csv_length = len(df)
 
 # new column made in csv
@@ -51,27 +51,20 @@ df['transfer_time'] = None
 ## finding unique timestamp to get the total no of vehicles in that time 
 thresold = 900
 time_array = df['time'].unique()[:thresold]
-vehicle_name_array = df['name'].unique()[:thresold]
-print(vehicle_name_array)
-print(len(vehicle_name_array))
+vehicle_name_array = df['name'].unique()
+# print(vehicle_name_array)
+print('total no of vehicles', len(vehicle_name_array))
 #print(time_array)
 max_time= np.amax(time_array)
-print(max_time)
-
+print('max time', max_time)
 min_time= np.amin(time_array)
-exit()
 
 # no_of_vehicles = len(df['name'].unique())
 #no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
-no_of_vehicles = 25
+no_of_vehicles = 80
 temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
 print('no_of_vehicles', no_of_vehicles)
 print('temp_no_of_vehicles', temp_no_of_vehicles)
-
-
-
-
-
 
 #for a particular time, calculating transfer_time for all vehicles
 for time in time_array:
@@ -105,12 +98,9 @@ for time in time_array:
 
 transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
 transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
-print("transfer time:", transfer_time) 
-
-          
+print("transfer time:", transfer_time)           
 
 #print(df[1:5])
-
 # print(edge_execution_time)
 # print(local_execution_time)
 # print(data_size)
@@ -121,20 +111,22 @@ vehicle = namedtuple(
     'vehicle', 'name no_of_ins data_size edge_exe_time transfer_time period deadline')
 vehicle_list = []
 
-for i, row in df.loc[df['time'] == time_array[0]][0:temp_no_of_vehicles].iterrows():
+# for i, row in df.loc[df['time'] == time_array[0]][0:temp_no_of_vehicles].iterrows():
+for name in vehicle_name_array[:temp_no_of_vehicles]:
+    transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
+        
     v = vehicle(
-        name=row['name'],
+        name=name,
         no_of_ins=no_of_ins,
         data_size=data_size,
         edge_exe_time=edge_execution_time,
-        transfer_time=row['transfer_time'],
+        transfer_time=math.ceil((data_size/transfer_rate2)*1000),
         period=period,
         deadline=deadline
     )
     vehicle_list.append(v)
 
 print('Total vehicle count' ,len(vehicle_list))
-
 
 #main code to do the scheduling of the vehicle jobs along with shufffling of the vehicle order
 def create_queue(vehicles, time_span):
