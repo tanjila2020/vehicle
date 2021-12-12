@@ -8,7 +8,7 @@ from IPython import embed
 import pandas as pd
 
 ##parameter value
-no_of_ap = 1# parameter to calculate data size from sanaz paper
+no_of_ap = 5# parameter to calculate data size from sanaz paper
 no_of_servers = 2
 #no_of_vehicles= 25
 data_height = 200  # inpixel
@@ -46,8 +46,9 @@ df['transfer_time'] = None
 # df['no_of_jobs_dropped'] = None
 
 ## finding unique timestamp to get the total no of vehicles in that time 
-thresold = 900
-time_array = df['time'].unique()[:thresold]
+#thresold = 900
+#time_array = df['time'].unique()[:thresold]
+time_array = df['time'].unique()
 vehicle_name_array = df['name'].unique()
 # print(vehicle_name_array)
 #print('total no of vehicles', len(vehicle_name_array))
@@ -111,7 +112,7 @@ vehicle_list = []
 
 # for i, row in df.loc[df['time'] == time_array[0]][0:temp_no_of_vehicles].iterrows():
 for name in vehicle_name_array[:temp_no_of_vehicles]:
-    transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
+    transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
         
     v = vehicle(
         name=name,
@@ -240,9 +241,9 @@ total_transfer_time = (total_jobs - total_jobs_dropped)* transfer_time
 server_utilization = total_demand/span
 ap_utilization = ((total_transfer_time/span)/no_of_ap)
 #print('Total generated jobs:', total_jobs)
-#print('total no of jobs dropped:', total_jobs_dropped)
+print('total no of jobs dropped:', total_jobs_dropped)
 #print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
-print('percentage of jobs dropped:', )
+print('percentage of jobs dropped:', (total_jobs_dropped/total_jobs) )
 print('server utilization:', server_utilization)
 print('bandwidth utilization:', ap_utilization)
 
