@@ -8,8 +8,8 @@ from IPython import embed
 import pandas as pd
 
 ##parameter value
-no_of_ap = 6# parameter to calculate data size from sanaz paper
-no_of_servers = 20
+no_of_ap = 1# parameter to calculate data size from sanaz paper
+no_of_servers = 2
 #no_of_vehicles= 25
 data_height = 200  # inpixel
 data_width = 300  # inpixel
@@ -37,7 +37,7 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 #df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('5am.csv')
+df = pd.read_csv('1am.csv')
 csv_length = len(df)
 
 # new column made in csv
@@ -93,7 +93,8 @@ print('temp_no_of_vehicles', temp_no_of_vehicles)
 #             transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
 #             df.at[i, 'transfer_time'] = transfer_time
 
-transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
+#transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
+transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
 transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
 print("transfer time:", transfer_time)           
 
@@ -138,8 +139,9 @@ def create_queue(vehicles, time_span):
                 name=vehicle.name,
                 edge_exe_time=vehicle.edge_exe_time,
                 # time when requests arrives after transfer
-                start_time=i + vehicle.transfer_time,
                 transfer_time=vehicle.transfer_time,
+                start_time=i + vehicle.transfer_time,
+                
                 deadline=vehicle_deadline,
                 job_no=None
             )
@@ -161,7 +163,8 @@ def create_queue(vehicles, time_span):
     return queue
 
 
-span = period*temp_no_of_vehicles
+#span = period*temp_no_of_vehicles
+span = 70000
 #span = sum([vehicle.period for vehicle in vehicle_list])
 queue = create_queue(vehicle_list, span)
 vehicle_period_map = {vehicle.name: vehicle.period for vehicle in vehicle_list}
@@ -227,12 +230,22 @@ total_avg_res_time = response_time_df['response_time'].mean()
 # response_time_df.loc[(response_time_df['name'] == 'v5') & (response_time_df['job_no'] == 5.0)]
 # print(ignored_jobs_df)
 ignored_job_count = ignored_jobs_df.groupby(['name']).size().reset_index(name='jobs_dropped')
-print('No of jobs dropped\n', ignored_job_count)
+#print('No of jobs dropped\n', ignored_job_count)
 #avg_job_drop = ignored_jobs_df['jobs_dropped'].mean()
 print('total average response time is:  ', total_avg_res_time)
-print('Total jobs:', len(queue))
-print('Sum of jobs dropped:', ignored_job_count['jobs_dropped'].sum())
-print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
+total_jobs= len(queue)
+total_jobs_dropped= ignored_job_count['jobs_dropped'].sum()
+total_demand= (total_jobs - total_jobs_dropped)* edge_execution_time
+total_transfer_time = (total_jobs - total_jobs_dropped)* transfer_time
+server_utilization = total_demand/span
+ap_utilization = ((total_transfer_time/span)/no_of_ap)
+#print('Total generated jobs:', total_jobs)
+#print('total no of jobs dropped:', total_jobs_dropped)
+#print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
+print('percentage of jobs dropped:', )
+print('server utilization:', server_utilization)
+print('bandwidth utilization:', ap_utilization)
+
 #print('Average no of jobs dropped:  ', avg_job_drop )
 
 # embed()
