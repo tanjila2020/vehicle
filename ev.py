@@ -59,9 +59,9 @@ vehicle_name_array = df['name'].unique()
 max_time= np.amax(time_array)
 print('max time', max_time)
 min_time= np.amin(time_array)
-#no_of_vehicles = len(vehicle_name_array)
+no_of_vehicles = len(vehicle_name_array)
 #no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
-no_of_vehicles= 231
+#no_of_vehicles= 231
 
 temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
 print('no_of_vehicles', no_of_vehicles)
