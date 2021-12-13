@@ -8,11 +8,13 @@ from IPython import embed
 import pandas as pd
 
 ##parameter value
-# no_of_ap = 84# parameter to calculate data size from sanaz paper
-# no_of_servers = 57
+#average configuration
+no_of_ap = 84# parameter to calculate data size from sanaz paper
+no_of_servers = 57
 
-no_of_ap = 177# parameter to calculate data size from sanaz paper
-no_of_servers = 121
+#peak configuration
+# no_of_ap = 177# parameter to calculate data size from sanaz paper
+# no_of_servers = 121
 #no_of_vehicles= 25
 data_height = 200  # inpixel
 data_width = 300  # inpixel
