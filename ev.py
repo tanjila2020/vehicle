@@ -8,8 +8,11 @@ from IPython import embed
 import pandas as pd
 
 ##parameter value
-no_of_ap = 120# parameter to calculate data size from sanaz paper
-no_of_servers = 30
+# no_of_ap = 84# parameter to calculate data size from sanaz paper
+# no_of_servers = 57
+
+no_of_ap = 177# parameter to calculate data size from sanaz paper
+no_of_servers = 121
 #no_of_vehicles= 25
 data_height = 200  # inpixel
 data_width = 300  # inpixel
@@ -37,7 +40,7 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 #df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('6am.csv')
+df = pd.read_csv('10am.csv')
 csv_length = len(df)
 
 # new column made in csv
@@ -164,8 +167,8 @@ def create_queue(vehicles, time_span):
     return queue
 
 
-span = period*temp_no_of_vehicles
-#span = 70000
+#span = period*temp_no_of_vehicles
+span = 70000
 #span = sum([vehicle.period for vehicle in vehicle_list])
 queue = create_queue(vehicle_list, span)
 vehicle_period_map = {vehicle.name: vehicle.period for vehicle in vehicle_list}
