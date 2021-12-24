@@ -42,7 +42,7 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 #df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('9pm.csv')
+df = pd.read_csv('7am.csv')
 csv_length = len(df)
 
 # new column made in csv
@@ -244,7 +244,7 @@ total_jobs_dropped= ignored_job_count['jobs_dropped'].sum()
 total_demand= (total_jobs - total_jobs_dropped)* edge_execution_time
 total_transfer_time = (total_jobs - total_jobs_dropped)* transfer_time
 server_utilization = total_demand/span
-ap_utilization = ((total_transfer_time/span)/no_of_ap)
+ap_utilization = ((((total_transfer_time)/span) * no_of_servers)/no_of_ap)
 #print('Total generated jobs:', total_jobs)
 print('total no of jobs dropped:', total_jobs_dropped)
 #print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
