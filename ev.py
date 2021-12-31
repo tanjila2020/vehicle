@@ -5,6 +5,7 @@ from functools import reduce
 from random import shuffle
 import random
 from IPython import embed
+from numpy.lib.function_base import piecewise
 import pandas as pd
 
 # parameter value
@@ -22,8 +23,7 @@ bit_depth = 30  # in bit
 data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
 bandwidth = 1000  # in Mbps (megabit) this is when we consider equal share(simple model to calc transfer rate)
 no_of_ins = 3000  # in millions
-period = 200
-deadline = period
+deadline = 200
 # calculating local and edge capacity
 v = 7.683
 o = -4558.52
@@ -66,6 +66,7 @@ no_of_vehicles = len(vehicle_name_array)
 #no_of_vehicles= 231
 
 temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
+temp_no_of_vehicles = 5
 print('no_of_vehicles', no_of_vehicles)
 print('temp_no_of_vehicles', temp_no_of_vehicles)
 
@@ -124,60 +125,91 @@ for name in vehicle_name_array[:temp_no_of_vehicles]:
         data_size=data_size,
         edge_exe_time=edge_execution_time,
         transfer_time=math.ceil((data_size/transfer_rate2)*1000),
-        period=period,
+        period=0,
         deadline=deadline
     )
     vehicle_list.append(v)
 
 print('Total vehicle count', len(vehicle_list))
+# print(*vehicle_list, sep='\n')
 
 '''
-Main code to do the scheduling of the vehicle jobs along with shufffling of the vehicle order
-
+# Logic of allocation
 Say, we have 5 vehicles 1, 2, 3, 4, 5.
-Say, we can allocate 1,2,3 at first period without deadline miss, 
-vehicle 4 and 5 was given but with deadline miss.
-So, in next period vehicle 4 and 5 wont relaease jobs (we call it dropped jobs), 
-and among 1, 2, 3 there will be shuffle in the order to execute job in the next period.
+At first all vehicles will have period starting from zero. 
+Then for any particular vehicle the period for next job will be the end time of earlier job of the same vehicle.
+Even if jobs miss deadline, we will keep executing them and just keep a count.
+
+# Logic of period caculation
+start time = period + transfer time
+end time = start time + execution time
+
+execution = 5
+transfer = 2
+
+job 1 
+period = 0
+start = 0 + 2 = 2
+end = 2 + 5 = 7
+
+job 2
+period = 7
+start = 7 + 2 = 9
+end = 9 + 5 = 14
+
+job 3
+period = 14
+start = 14 + 2 = 16
+end = 16 + 5 = 21
+
+job 4
+period 21
 '''
+
+
 def create_queue(vehicles, time_span):
     queue = []
     queued_vehicles = namedtuple(
-        'vehicle', 'name edge_exe_time start_time transfer_time deadline job_no')
+        'vehicle', 'name edge_exe_time start_time transfer_time end_time deadline job_no')
 
     for vehicle in vehicles:
-        for i in range(0, time_span + 1 - vehicle.period, vehicle.period):
-            vehicle_deadline = i + vehicle.deadline
+        period = 0
+        job_no = 1
+
+        while(period <= time_span):
+            vehicle_deadline = period + vehicle.deadline
+            start_time = period + vehicle.transfer_time
+            end_time = start_time + vehicle.edge_exe_time
             qt = queued_vehicles(
                 name=vehicle.name,
                 edge_exe_time=vehicle.edge_exe_time,
                 # time when requests arrives after transfer
                 transfer_time=vehicle.transfer_time,
-                start_time=i + vehicle.transfer_time,
-
+                start_time=start_time,
+                end_time=end_time,
                 deadline=vehicle_deadline,
-                job_no=None
+                job_no=job_no
             )
             queue.append(qt)
 
-    queue = sorted(queue, key=lambda qt: (qt.deadline, qt.start_time))
-    vehicle_counter = []
+            period = end_time
+            job_no += 1
 
-    for i in range(len(queue)):
-        vehicle_counter.append(queue[i].name)
-        task_count = vehicle_counter.count(queue[i].name)
-        queue[i] = queue[i]._replace(job_no=task_count)
-    # embed()
+        period = 0
+        job_no = 1
+
+    queue = sorted(queue, key=lambda qt: (qt.deadline, qt.start_time))
+
     for i in range(0, len(queue), temp_no_of_vehicles):
         sublist = queue[i: i + temp_no_of_vehicles]
         shuffle(sublist)
         queue[i: i + temp_no_of_vehicles] = sublist
-    # print(*queue[:50], sep='\n')
+    # print(*queue, sep='\n')
     return queue
 
 
 #span = period*temp_no_of_vehicles
-span = 70000
+span = 500
 #span = sum([vehicle.period for vehicle in vehicle_list])
 queue = create_queue(vehicle_list, span)
 vehicle_period_map = {vehicle.name: vehicle.period for vehicle in vehicle_list}
@@ -228,13 +260,13 @@ for vehicle in queue:
         period = (vehicle.job_no - 1) * vehicle_period_map[vehicle.name]
         #response_time = vehicle_end_time - periodpyt
         cpu_current_time = vehicle_end_time
-        # print(job)
+        print(job)
     else:
         period = (vehicle.job_no - 1) * vehicle_period_map[vehicle.name]
         #response_time = vehicle_end_time - period
         cpu_current_time = vehicle_end_time
         discarded_job.append(job.name)
-        # print('---------', job)
+        print('---------', job)
 
 # print(response_time_df)
 average_response_time = response_time_df[['name', 'response_time']].groupby(['name']).mean()
