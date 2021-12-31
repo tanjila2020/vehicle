@@ -7,12 +7,12 @@ import random
 from IPython import embed
 import pandas as pd
 
-##parameter value
-#average configuration
-no_of_ap = 84# parameter to calculate data size from sanaz paper
+# parameter value
+# average configuration
+no_of_ap = 84  # parameter to calculate data size from sanaz paper
 no_of_servers = 57
 
-#peak configuration
+# peak configuration
 # no_of_ap = 177# parameter to calculate data size from sanaz paper
 # no_of_servers = 121
 #no_of_vehicles= 25
@@ -41,7 +41,7 @@ print("local execution time:", local_execution_time)
 #print("local_cpu_capacity:", local_cpu_capacity)
 
 # read vehicle data from csv
-#df = pd.read_csv('first_output.csv', index_col='#')
+# df = pd.read_csv('first_output.csv', index_col='#')
 df = pd.read_csv('7am.csv')
 csv_length = len(df)
 
@@ -50,17 +50,17 @@ df['transfer_time'] = None
 # df['avg_response_time'] = None
 # df['no_of_jobs_dropped'] = None
 
-## finding unique timestamp to get the total no of vehicles in that time 
+# finding unique timestamp to get the total no of vehicles in that time
 #thresold = 900
 #time_array = df['time'].unique()[:thresold]
 time_array = df['time'].unique()
 vehicle_name_array = df['name'].unique()
 # print(vehicle_name_array)
 #print('total no of vehicles', len(vehicle_name_array))
-#print(time_array)
-max_time= np.amax(time_array)
+# print(time_array)
+max_time = np.amax(time_array)
 print('max time', max_time)
-min_time= np.amin(time_array)
+min_time = np.amin(time_array)
 no_of_vehicles = len(vehicle_name_array)
 #no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
 #no_of_vehicles= 231
@@ -69,7 +69,7 @@ temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
 print('no_of_vehicles', no_of_vehicles)
 print('temp_no_of_vehicles', temp_no_of_vehicles)
 
-#for a particular time, calculating transfer_time for all vehicles
+# for a particular time, calculating transfer_time for all vehicles
 # for time in time_array:
 #     if (time <= min_time) and (time>= max_time):
 #         # select the rows with the timestamp of sec
@@ -87,38 +87,37 @@ print('temp_no_of_vehicles', temp_no_of_vehicles)
 #             # bandwidth = 20*10**6  # in Hz
 #             # snr = p*h/white_noise
 #             # n_i = (math.log((1+snr), (10)))  # uplink spectral efficiency in (bits/(sec* Hz))
-            
+
 #             # transfer_rate1 = (bandwidth*no_of_ap * n_i) / no_of_vehicles #(in bits per sec)
 #             # transfer_rate1 = round(transfer_rate1, 2)
-#             #n_i2 = (math.log((1+(p*127/white_noise)), (10))) 
+#             #n_i2 = (math.log((1+(p*127/white_noise)), (10)))
 #             #transfer_rate2 = (bandwidth*no_of_ap)*n_i2/no_of_vehicles
 #             transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
 #             #print("transfer rate1", transfer_rate1)
 #             #print("transfer rate2", transfer_rate2)
-            
+
 #             transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
 #             df.at[i, 'transfer_time'] = transfer_time
 
 #transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
 transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
 transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
-print("transfer time:", transfer_time)           
+print("transfer time:", transfer_time)
 
-#print(df[1:5])
+# print(df[1:5])
 # print(edge_execution_time)
 # print(local_execution_time)
 # print(data_size)
 # print(transfer_time)
 
 # making vehicle class to store its attributes
-vehicle = namedtuple(
-    'vehicle', 'name no_of_ins data_size edge_exe_time transfer_time period deadline')
+vehicle = namedtuple('vehicle', 'name no_of_ins data_size edge_exe_time transfer_time period deadline')
 vehicle_list = []
 
 # for i, row in df.loc[df['time'] == time_array[0]][0:temp_no_of_vehicles].iterrows():
 for name in vehicle_name_array[:temp_no_of_vehicles]:
     transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
-        
+
     v = vehicle(
         name=name,
         no_of_ins=no_of_ins,
@@ -130,9 +129,17 @@ for name in vehicle_name_array[:temp_no_of_vehicles]:
     )
     vehicle_list.append(v)
 
-print('Total vehicle count' ,len(vehicle_list))
+print('Total vehicle count', len(vehicle_list))
 
-#main code to do the scheduling of the vehicle jobs along with shufffling of the vehicle order
+'''
+Main code to do the scheduling of the vehicle jobs along with shufffling of the vehicle order
+
+Say, we have 5 vehicles 1, 2, 3, 4, 5.
+Say, we can allocate 1,2,3 at first period without deadline miss, 
+vehicle 4 and 5 was given but with deadline miss.
+So, in next period vehicle 4 and 5 wont relaease jobs (we call it dropped jobs), 
+and among 1, 2, 3 there will be shuffle in the order to execute job in the next period.
+'''
 def create_queue(vehicles, time_span):
     queue = []
     queued_vehicles = namedtuple(
@@ -147,7 +154,7 @@ def create_queue(vehicles, time_span):
                 # time when requests arrives after transfer
                 transfer_time=vehicle.transfer_time,
                 start_time=i + vehicle.transfer_time,
-                
+
                 deadline=vehicle_deadline,
                 job_no=None
             )
@@ -185,9 +192,11 @@ response_time_df = pd.DataFrame(data)
 ignored_jobs_df = pd.DataFrame({"name": [], "job": []})
 
 for vehicle in queue:
+    '''
+    checking vehicle already exist in discarded_job.
+    if already exists then remove it form the the list and add to ignored_jobs
+    '''
     if vehicle.name in discarded_job:
-        # print(discarded_job)
-        # print('ignored ', vehicle)
         discarded_job.remove(vehicle.name)
         ignored_jobs_df = ignored_jobs_df.append({
             'name': vehicle.name,
@@ -199,8 +208,7 @@ for vehicle in queue:
     vehicle_end_time = vehicle.start_time + vehicle.edge_exe_time
     deadline_missed = vehicle_end_time > vehicle.deadline
 
-    Job = namedtuple(
-        'Job', 'name start_time edge_exe_time end_time deadline deadline_missed job_no')
+    Job = namedtuple('Job', 'name start_time edge_exe_time end_time deadline deadline_missed job_no')
 
     job = Job(name=vehicle.name,
               start_time=vehicle.start_time,
@@ -238,16 +246,16 @@ ignored_job_count = ignored_jobs_df.groupby(['name']).size().reset_index(name='j
 #print('No of jobs dropped\n', ignored_job_count)
 #avg_job_drop = ignored_jobs_df['jobs_dropped'].mean()
 print('total average response time is:  ', total_avg_res_time)
-total_jobs= len(queue)
-total_jobs_dropped= ignored_job_count['jobs_dropped'].sum()
-total_demand= (total_jobs - total_jobs_dropped)* edge_execution_time
-total_transfer_time = (total_jobs - total_jobs_dropped)* transfer_time
+total_jobs = len(queue)
+total_jobs_dropped = ignored_job_count['jobs_dropped'].sum()
+total_demand = (total_jobs - total_jobs_dropped) * edge_execution_time
+total_transfer_time = (total_jobs - total_jobs_dropped) * transfer_time
 server_utilization = total_demand/span
 ap_utilization = ((((total_transfer_time)/span) * no_of_servers)/no_of_ap)
 #print('Total generated jobs:', total_jobs)
 print('total no of jobs dropped:', total_jobs_dropped)
 #print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
-print('percentage of jobs dropped:', (total_jobs_dropped/total_jobs) )
+print('percentage of jobs dropped:', (total_jobs_dropped/total_jobs))
 print('server utilization:', server_utilization)
 print('bandwidth utilization:', ap_utilization)
 
