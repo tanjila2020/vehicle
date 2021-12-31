@@ -165,7 +165,7 @@ def create_queue(vehicles, time_span):
         sublist = queue[i: i + temp_no_of_vehicles]
         shuffle(sublist)
         queue[i: i + temp_no_of_vehicles] = sublist
-    # print(queue)
+    # print(*queue[:50], sep='\n')
     return queue
 
 
@@ -195,8 +195,7 @@ for vehicle in queue:
         }, ignore_index=True)
         continue
 
-    vehicle = vehicle._replace(start_time=max(
-        vehicle.start_time, cpu_current_time))
+    vehicle = vehicle._replace(start_time=max(vehicle.start_time, cpu_current_time))
     vehicle_end_time = vehicle.start_time + vehicle.edge_exe_time
     deadline_missed = vehicle_end_time > vehicle.deadline
 
@@ -219,7 +218,7 @@ for vehicle in queue:
 
     if not deadline_missed:
         period = (vehicle.job_no - 1) * vehicle_period_map[vehicle.name]
-        #response_time = vehicle_end_time - period
+        #response_time = vehicle_end_time - periodpyt
         cpu_current_time = vehicle_end_time
         # print(job)
     else:
