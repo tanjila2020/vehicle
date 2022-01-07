@@ -66,7 +66,7 @@ no_of_vehicles = len(vehicle_name_array)
 #no_of_vehicles= 231
 
 temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
-temp_no_of_vehicles = 5
+temp_no_of_vehicles = 3
 print('no_of_vehicles', no_of_vehicles)
 print('temp_no_of_vehicles', temp_no_of_vehicles)
 
