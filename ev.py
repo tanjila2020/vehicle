@@ -1,3 +1,4 @@
+from datetime import time
 import math
 import numpy as np
 from collections import namedtuple
@@ -171,6 +172,43 @@ def create_queue(vehicles, time_span):
     queue = []
     queued_vehicles = namedtuple(
         'vehicle', 'name edge_exe_time start_time transfer_time end_time deadline job_no')
+
+
+    period = dict()
+    job_no = 1
+    current_time = 0
+
+    for vehicle in vehicles:
+        period[vehicle.name] = 0
+
+    while (current_time < time_span):
+        for vehicle in vehicles:
+            vehicle_deadline = period[vehicle.name] + vehicle.deadline
+            start_time = current_time +  vehicle.transfer_time
+            end_time = start_time + vehicle.edge_exe_time
+            qt = queued_vehicles(
+                name=vehicle.name,
+                edge_exe_time=vehicle.edge_exe_time,
+                # time when requests arrives after transfer
+                transfer_time=vehicle.transfer_time,
+                start_time=start_time,
+                end_time=end_time,
+                deadline=vehicle_deadline,
+                job_no=job_no
+            )
+            queue.append(qt)
+            period[vehicle.name] = end_time
+            current_time = end_time
+
+        job_no += 1
+
+
+    print(*queue, sep='\n')
+
+    exit()
+
+
+
 
     for vehicle in vehicles:
         period = 0
