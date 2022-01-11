@@ -65,52 +65,14 @@ min_time = np.amin(time_array)
 no_of_vehicles = len(vehicle_name_array)
 #no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
 #no_of_vehicles= 231
-
 temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
 temp_no_of_vehicles = 3
 print('no_of_vehicles', no_of_vehicles)
 print('temp_no_of_vehicles', temp_no_of_vehicles)
-
-# for a particular time, calculating transfer_time for all vehicles
-# for time in time_array:
-#     if (time <= min_time) and (time>= max_time):
-#         # select the rows with the timestamp of sec
-#         matched_loc = df.loc[df['time'] == time]
-#         no_of_vehicle = matched_loc['name']
-
-#         for i, row in df.loc[df['time'] == time].iterrows():
-#             # d = row['distance']  # in kilometer
-#             # # Transmission power of each vehicle in(dBm)
-#             # p = random.randint(20, 30)
-#             # h = 127+30*(math.log(d, (10)))  # channel gain, d is in km
-#             # white_noise = 2*10**-13  # white gaussian noise in watt
-#             # # data_size = np.random.uniform(0.4, 0.8) #in megabits
-#             # data_size = 1.8*10**6  # in bits
-#             # bandwidth = 20*10**6  # in Hz
-#             # snr = p*h/white_noise
-#             # n_i = (math.log((1+snr), (10)))  # uplink spectral efficiency in (bits/(sec* Hz))
-
-#             # transfer_rate1 = (bandwidth*no_of_ap * n_i) / no_of_vehicles #(in bits per sec)
-#             # transfer_rate1 = round(transfer_rate1, 2)
-#             #n_i2 = (math.log((1+(p*127/white_noise)), (10)))
-#             #transfer_rate2 = (bandwidth*no_of_ap)*n_i2/no_of_vehicles
-#             transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
-#             #print("transfer rate1", transfer_rate1)
-#             #print("transfer rate2", transfer_rate2)
-
-#             transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
-#             df.at[i, 'transfer_time'] = transfer_time
-
 #transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
 transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
 transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
 print("transfer time:", transfer_time)
-
-# print(df[1:5])
-# print(edge_execution_time)
-# print(local_execution_time)
-# print(data_size)
-# print(transfer_time)
 
 # making vehicle class to store its attributes
 vehicle = namedtuple('vehicle', 'name no_of_ins data_size edge_exe_time transfer_time period deadline')
@@ -165,58 +127,28 @@ end = 16 + 5 = 21
 
 job 4
 period 21
+
+# transfer time calculation
+say we have two vehicles
+for v1 transfer_time = 10 execution_time = 2
+for v2 transfer_time = 10 execution_time = 3
+the job schedule should be like below:
+
+10-(v1 j1)-12 12-(v2 j1)-15 22-(v1 j2)-24 24-(v2 j2)-28 
+34-(v1 j3)-36 38-(v2 j3)-41
 '''
-
-
-def create_queue(vehicles, time_span):
-    queue = []
-    queued_vehicles = namedtuple(
-        'vehicle', 'name edge_exe_time start_time transfer_time end_time deadline job_no')
-
-    period = dict()
-    end = dict()
-    job_no = 1
-    current_time = 0
-
-    for vehicle in vehicles:
-        period[vehicle.name] = 0
-        end[vehicle.name] = vehicle.transfer_time
-
-    while (current_time < time_span):
-        for vehicle in vehicles:
-            vehicle_deadline = period[vehicle.name] + vehicle.deadline
-            # start_time = current_time +  vehicle.transfer_time
-            start_time = max(current_time, end[vehicle.name])
-            end_time = start_time + vehicle.edge_exe_time
-            end[vehicle.name] = vehicle.transfer_time + end_time
-
-            qt = queued_vehicles(
-                name=vehicle.name,
-                edge_exe_time=vehicle.edge_exe_time,
-                # time when requests arrives after transfer
-                transfer_time=vehicle.transfer_time,
-                start_time=start_time,
-                end_time=end_time,
-                deadline=vehicle_deadline,
-                job_no=job_no
-            )
-            queue.append(qt)
-            period[vehicle.name] = end_time
-            current_time = end_time
-
-        job_no += 1
-
-    print(*queue, sep='\n')
-
-    return queue
-
 
 #span = period*temp_no_of_vehicles
 span = 500
 #span = sum([vehicle.period for vehicle in vehicle_list])
-queue = create_queue(vehicle_list, span)
-vehicle_period_map = {vehicle.name: vehicle.period for vehicle in vehicle_list}
-
+queue = []
+queued_vehicles = namedtuple(
+    'vehicle',
+    'name edge_exe_time start_time transfer_time end_time deadline job_no')
+period = dict()
+end = dict()
+job_no = 1
+current_time = 0
 deadline_missed_jobs = 0
 data = {
     "name": [],
@@ -226,20 +158,50 @@ data = {
 response_time_df = pd.DataFrame(data)
 ignored_jobs_df = pd.DataFrame({"name": [], "job": []})
 
-for vehicle in queue:
-    deadline_missed = vehicle.end_time > vehicle.deadline
+for vehicle in vehicle_list:
+    period[vehicle.name] = 0
+    end[vehicle.name] = vehicle.transfer_time
 
-    response_time_df = response_time_df.append({
-        'name': vehicle.name,
-        'job_no': vehicle.job_no,
-        'response_time': vehicle.end_time - vehicle.start_time + vehicle.transfer_time,
-    }, ignore_index=True)
+while (current_time < span):
+    for vehicle in vehicle_list:
+        vehicle_deadline = period[vehicle.name] + vehicle.deadline
+        # start_time = current_time +  vehicle.transfer_time
+        start_time = max(current_time, end[vehicle.name])
+        end_time = start_time + vehicle.edge_exe_time
+        end[vehicle.name] = vehicle.transfer_time + end_time
 
-    if not deadline_missed:
-        print(vehicle)
-    else:
-        deadline_missed_jobs += 1
-        print('---------', vehicle)
+        qt = queued_vehicles(
+            name=vehicle.name,
+            edge_exe_time=vehicle.edge_exe_time,
+            # time when requests arrives after transfer
+            transfer_time=vehicle.transfer_time,
+            start_time=start_time,
+            end_time=end_time,
+            deadline=vehicle_deadline,
+            job_no=job_no
+        )
+        queue.append(qt)
+        period[vehicle.name] = end_time
+        current_time = end_time
+
+        # calculate missed jobs
+        deadline_missed = qt.end_time > qt.deadline
+
+        response_time_df = response_time_df.append({
+            'name': qt.name,
+            'job_no': qt.job_no,
+            'response_time': qt.end_time - qt.start_time + qt.transfer_time,
+        }, ignore_index=True)
+
+        if not deadline_missed:
+            print(qt)
+        else:
+            deadline_missed_jobs += 1
+            print('---------', qt)
+
+    job_no += 1
+
+print(*queue, sep='\n')
 
 # print(response_time_df)
 average_response_time = response_time_df[['name', 'response_time']].groupby(['name']).mean()
