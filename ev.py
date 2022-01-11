@@ -175,17 +175,22 @@ def create_queue(vehicles, time_span):
 
 
     period = dict()
+    end = dict()
     job_no = 1
     current_time = 0
 
     for vehicle in vehicles:
         period[vehicle.name] = 0
+        end[vehicle.name] = vehicle.transfer_time
 
     while (current_time < time_span):
         for vehicle in vehicles:
             vehicle_deadline = period[vehicle.name] + vehicle.deadline
-            start_time = current_time +  vehicle.transfer_time
+            # start_time = current_time +  vehicle.transfer_time
+            start_time = max(current_time, end[vehicle.name])
             end_time = start_time + vehicle.edge_exe_time
+            end[vehicle.name] = vehicle.transfer_time + end_time
+
             qt = queued_vehicles(
                 name=vehicle.name,
                 edge_exe_time=vehicle.edge_exe_time,
@@ -206,9 +211,6 @@ def create_queue(vehicles, time_span):
     print(*queue, sep='\n')
 
     exit()
-
-
-
 
     for vehicle in vehicles:
         period = 0
