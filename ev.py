@@ -173,7 +173,6 @@ def create_queue(vehicles, time_span):
     queued_vehicles = namedtuple(
         'vehicle', 'name edge_exe_time start_time transfer_time end_time deadline job_no')
 
-
     period = dict()
     end = dict()
     job_no = 1
@@ -207,44 +206,8 @@ def create_queue(vehicles, time_span):
 
         job_no += 1
 
-
     print(*queue, sep='\n')
 
-    exit()
-
-    for vehicle in vehicles:
-        period = 0
-        job_no = 1
-
-        while(period <= time_span):
-            vehicle_deadline = period + vehicle.deadline
-            start_time = period + vehicle.transfer_time
-            end_time = start_time + vehicle.edge_exe_time
-            qt = queued_vehicles(
-                name=vehicle.name,
-                edge_exe_time=vehicle.edge_exe_time,
-                # time when requests arrives after transfer
-                transfer_time=vehicle.transfer_time,
-                start_time=start_time,
-                end_time=end_time,
-                deadline=vehicle_deadline,
-                job_no=job_no
-            )
-            queue.append(qt)
-
-            period = end_time
-            job_no += 1
-
-        period = 0
-        job_no = 1
-
-    queue = sorted(queue, key=lambda qt: (qt.deadline, qt.start_time))
-
-    for i in range(0, len(queue), temp_no_of_vehicles):
-        sublist = queue[i: i + temp_no_of_vehicles]
-        shuffle(sublist)
-        queue[i: i + temp_no_of_vehicles] = sublist
-    # print(*queue, sep='\n')
     return queue
 
 
@@ -253,8 +216,8 @@ span = 500
 #span = sum([vehicle.period for vehicle in vehicle_list])
 queue = create_queue(vehicle_list, span)
 vehicle_period_map = {vehicle.name: vehicle.period for vehicle in vehicle_list}
-cpu_current_time = 0
-discarded_job = []
+
+deadline_missed_jobs = 0
 data = {
     "name": [],
     "job_no": [],
@@ -264,49 +227,19 @@ response_time_df = pd.DataFrame(data)
 ignored_jobs_df = pd.DataFrame({"name": [], "job": []})
 
 for vehicle in queue:
-    '''
-    checking vehicle already exist in discarded_job.
-    if already exists then remove it form the the list and add to ignored_jobs
-    '''
-    if vehicle.name in discarded_job:
-        discarded_job.remove(vehicle.name)
-        ignored_jobs_df = ignored_jobs_df.append({
-            'name': vehicle.name,
-            'job': vehicle.job_no
-        }, ignore_index=True)
-        continue
-
-    vehicle = vehicle._replace(start_time=max(vehicle.start_time, cpu_current_time))
-    vehicle_end_time = vehicle.start_time + vehicle.edge_exe_time
-    deadline_missed = vehicle_end_time > vehicle.deadline
-
-    Job = namedtuple('Job', 'name start_time edge_exe_time end_time deadline deadline_missed job_no')
-
-    job = Job(name=vehicle.name,
-              start_time=vehicle.start_time,
-              edge_exe_time=vehicle.edge_exe_time,
-              end_time=vehicle_end_time,
-              deadline=vehicle.deadline,
-              deadline_missed=deadline_missed,
-              job_no=vehicle.job_no)
+    deadline_missed = vehicle.end_time > vehicle.deadline
 
     response_time_df = response_time_df.append({
         'name': vehicle.name,
         'job_no': vehicle.job_no,
-        'response_time': vehicle_end_time - vehicle.start_time + vehicle.transfer_time,
+        'response_time': vehicle.end_time - vehicle.start_time + vehicle.transfer_time,
     }, ignore_index=True)
 
     if not deadline_missed:
-        period = (vehicle.job_no - 1) * vehicle_period_map[vehicle.name]
-        #response_time = vehicle_end_time - periodpyt
-        cpu_current_time = vehicle_end_time
-        print(job)
+        print(vehicle)
     else:
-        period = (vehicle.job_no - 1) * vehicle_period_map[vehicle.name]
-        #response_time = vehicle_end_time - period
-        cpu_current_time = vehicle_end_time
-        discarded_job.append(job.name)
-        print('---------', job)
+        deadline_missed_jobs += 1
+        print('---------', vehicle)
 
 # print(response_time_df)
 average_response_time = response_time_df[['name', 'response_time']].groupby(['name']).mean()
