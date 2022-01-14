@@ -43,7 +43,7 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 # df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('7am.csv')
+df = pd.read_csv('9pm.csv')
 csv_length = len(df)
 
 # new column made in csv
@@ -66,7 +66,7 @@ no_of_vehicles = len(vehicle_name_array)
 #no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
 #no_of_vehicles= 231
 temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
-temp_no_of_vehicles = 3
+#temp_no_of_vehicles = 2
 print('no_of_vehicles', no_of_vehicles)
 print('temp_no_of_vehicles', temp_no_of_vehicles)
 #transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
@@ -139,7 +139,7 @@ the job schedule should be like below:
 '''
 
 #span = period*temp_no_of_vehicles
-span = 500
+span = 70000
 #span = sum([vehicle.period for vehicle in vehicle_list])
 queue = []
 queued_vehicles = namedtuple(
@@ -168,6 +168,7 @@ while (current_time < span):
         # start_time = current_time +  vehicle.transfer_time
         start_time = max(current_time, end[vehicle.name])
         end_time = start_time + vehicle.edge_exe_time
+        prev_end_time = end[vehicle.name] - vehicle.transfer_time
         end[vehicle.name] = vehicle.transfer_time + end_time
 
         qt = queued_vehicles(
@@ -190,20 +191,21 @@ while (current_time < span):
         response_time_df = response_time_df.append({
             'name': qt.name,
             'job_no': qt.job_no,
-            'response_time': qt.end_time - qt.start_time + qt.transfer_time,
+            'response_time': qt.end_time - prev_end_time,
         }, ignore_index=True)
 
         if not deadline_missed:
-            print(qt)
+            #print(qt)
+            pass
         else:
             deadline_missed_jobs += 1
-            print('---------', qt)
+            #print('---------', qt)
 
     job_no += 1
 
-print(*queue, sep='\n')
+#print(*queue, sep='\n')
 
-# print(response_time_df)
+#print(response_time_df)
 average_response_time = response_time_df[['name', 'response_time']].groupby(['name']).mean()
 #print('Average response time\n', average_response_time)
 total_avg_res_time = response_time_df['response_time'].mean()
@@ -213,18 +215,20 @@ ignored_job_count = ignored_jobs_df.groupby(['name']).size().reset_index(name='j
 #print('No of jobs dropped\n', ignored_job_count)
 #avg_job_drop = ignored_jobs_df['jobs_dropped'].mean()
 print('total average response time is:  ', total_avg_res_time)
+print('no of jobs missing deadline:', deadline_missed_jobs)
 total_jobs = len(queue)
-total_jobs_dropped = ignored_job_count['jobs_dropped'].sum()
-total_demand = (total_jobs - total_jobs_dropped) * edge_execution_time
-total_transfer_time = (total_jobs - total_jobs_dropped) * transfer_time
+#total_jobs_dropped = ignored_job_count['jobs_dropped'].sum()
+#total_demand = (total_jobs - total_jobs_dropped) * edge_execution_time
+total_demand = (total_jobs) * edge_execution_time
+#total_transfer_time = (total_jobs - total_jobs_dropped) * transfer_time
 server_utilization = total_demand/span
-ap_utilization = ((((total_transfer_time)/span) * no_of_servers)/no_of_ap)
+#ap_utilization = ((((total_transfer_time)/span) * no_of_servers)/no_of_ap)
 #print('Total generated jobs:', total_jobs)
-print('total no of jobs dropped:', total_jobs_dropped)
+#print('total no of jobs dropped:', total_jobs_dropped)
 #print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
-print('percentage of jobs dropped:', (total_jobs_dropped/total_jobs))
+#print('percentage of jobs dropped:', (total_jobs_dropped/total_jobs))
 print('server utilization:', server_utilization)
-print('bandwidth utilization:', ap_utilization)
+#print('bandwidth utilization:', ap_utilization)
 
 #print('Average no of jobs dropped:  ', avg_job_drop )
 
