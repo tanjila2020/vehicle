@@ -24,7 +24,9 @@ bit_depth = 30  # in bit
 data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
 bandwidth = 1000  # in Mbps (megabit) this is when we consider equal share(simple model to calc transfer rate)
 no_of_ins = 3000  # in millions
-deadline = 200
+#deadline = 200 #deadline is calculated later at line 52
+blind_distance = 2 #in meters
+
 # calculating local and edge capacity
 v = 7.683
 o = -4558.52
@@ -34,7 +36,7 @@ no_of_cores = 1
 local_cpu_capacity = math.ceil(((v * (freq*1000) + o) * no_of_cores) * 0.001)
 #local_cpu_speed = math.floor(local_cpu_speed)
 local_execution_time = math.ceil(no_of_ins/local_cpu_capacity)  # in millisecond
-edge_speed_factor = 15
+edge_speed_factor = 2
 edge_execution_time = math.ceil(local_execution_time/edge_speed_factor)  # in millisecond
 
 print("edge execution time:", edge_execution_time)
@@ -43,8 +45,14 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 # df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('9pm.csv')
+df = pd.read_csv('7am.csv')
 csv_length = len(df)
+avg_speed = df['speed'].mean() 
+print ('average speed: ' + str(avg_speed))
+deadline = math.ceil((blind_distance/avg_speed) * 1000) #in millisecond
+print ('deadline:', deadline)
+
+
 
 # new column made in csv
 df['transfer_time'] = None
@@ -73,6 +81,8 @@ print('temp_no_of_vehicles', temp_no_of_vehicles)
 transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
 transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
 print("transfer time:", transfer_time)
+
+exit()
 
 # making vehicle class to store its attributes
 vehicle = namedtuple('vehicle', 'name no_of_ins data_size edge_exe_time transfer_time period deadline')
