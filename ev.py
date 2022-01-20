@@ -11,8 +11,8 @@ import pandas as pd
 
 # parameter value
 # average configuration
-no_of_ap = 84  # parameter to calculate data size from sanaz paper
-no_of_servers = 57
+no_of_ap = 55 # parameter to calculate data size from sanaz paper
+no_of_servers = 140
 
 # peak configuration
 # no_of_ap = 177# parameter to calculate data size from sanaz paper
@@ -51,6 +51,7 @@ avg_speed = df['speed'].mean()
 print ('average speed: ' + str(avg_speed))
 deadline = math.ceil((blind_distance/avg_speed) * 1000) #in millisecond
 print ('deadline:', deadline)
+print ('data size:', data_size)
 
 
 
@@ -82,7 +83,7 @@ transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
 transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
 print("transfer time:", transfer_time)
 
-exit()
+
 
 # making vehicle class to store its attributes
 vehicle = namedtuple('vehicle', 'name no_of_ins data_size edge_exe_time transfer_time period deadline')
