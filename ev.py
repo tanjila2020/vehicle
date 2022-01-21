@@ -11,8 +11,8 @@ import pandas as pd
 
 # parameter value
 # average configuration
-no_of_ap = 55 # parameter to calculate data size from sanaz paper
-no_of_servers = 140
+no_of_ap =26# parameter to calculate data size from sanaz paper
+no_of_servers = 254
 
 # peak configuration
 # no_of_ap = 177# parameter to calculate data size from sanaz paper
@@ -25,7 +25,7 @@ data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
 bandwidth = 1000  # in Mbps (megabit) this is when we consider equal share(simple model to calc transfer rate)
 no_of_ins = 3000  # in millions
 #deadline = 200 #deadline is calculated later at line 52
-blind_distance = 2 #in meters
+blind_distance = 2#in meters
 
 # calculating local and edge capacity
 v = 7.683
@@ -36,7 +36,7 @@ no_of_cores = 1
 local_cpu_capacity = math.ceil(((v * (freq*1000) + o) * no_of_cores) * 0.001)
 #local_cpu_speed = math.floor(local_cpu_speed)
 local_execution_time = math.ceil(no_of_ins/local_cpu_capacity)  # in millisecond
-edge_speed_factor = 2
+edge_speed_factor = 4
 edge_execution_time = math.ceil(local_execution_time/edge_speed_factor)  # in millisecond
 
 print("edge execution time:", edge_execution_time)
@@ -45,9 +45,10 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 # df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('7am.csv')
+df = pd.read_csv('2pm.csv')
 csv_length = len(df)
 avg_speed = df['speed'].mean() 
+avg_speed = 9
 print ('average speed: ' + str(avg_speed))
 deadline = math.ceil((blind_distance/avg_speed) * 1000) #in millisecond
 print ('deadline:', deadline)
@@ -74,7 +75,9 @@ min_time = np.amin(time_array)
 no_of_vehicles = len(vehicle_name_array)
 #no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
 #no_of_vehicles= 231
-temp_no_of_vehicles = math.ceil(no_of_vehicles/no_of_servers)
+temp_no_of_vehicles = round(no_of_vehicles/no_of_servers)
+if temp_no_of_vehicles == 0:
+    temp_no_of_vehicles=1
 #temp_no_of_vehicles = 2
 print('no_of_vehicles', no_of_vehicles)
 print('temp_no_of_vehicles', temp_no_of_vehicles)
@@ -228,6 +231,7 @@ ignored_job_count = ignored_jobs_df.groupby(['name']).size().reset_index(name='j
 print('total average response time is:  ', total_avg_res_time)
 print('no of jobs missing deadline:', deadline_missed_jobs)
 total_jobs = len(queue)
+#print ('total jobs:', total_jobs)
 #total_jobs_dropped = ignored_job_count['jobs_dropped'].sum()
 #total_demand = (total_jobs - total_jobs_dropped) * edge_execution_time
 total_demand = (total_jobs) * edge_execution_time
@@ -238,6 +242,7 @@ server_utilization = total_demand/span
 #print('total no of jobs dropped:', total_jobs_dropped)
 #print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
 #print('percentage of jobs dropped:', (total_jobs_dropped/total_jobs))
+print('percentage of jobs missing deadline:', (deadline_missed_jobs/total_jobs))
 print('server utilization:', server_utilization)
 #print('bandwidth utilization:', ap_utilization)
 
