@@ -11,8 +11,8 @@ import pandas as pd
 
 # parameter value
 # average configuration
-no_of_ap =26# parameter to calculate data size from sanaz paper
-no_of_servers = 254
+no_of_ap =2# parameter to calculate data size from sanaz paper
+no_of_servers = 4
 
 # peak configuration
 # no_of_ap = 177# parameter to calculate data size from sanaz paper
@@ -36,8 +36,9 @@ no_of_cores = 1
 local_cpu_capacity = math.ceil(((v * (freq*1000) + o) * no_of_cores) * 0.001)
 #local_cpu_speed = math.floor(local_cpu_speed)
 local_execution_time = math.ceil(no_of_ins/local_cpu_capacity)  # in millisecond
-edge_speed_factor = 4
+edge_speed_factor = 13
 edge_execution_time = math.ceil(local_execution_time/edge_speed_factor)  # in millisecond
+#edge_execution_time = 480
 
 print("edge execution time:", edge_execution_time)
 print("local execution time:", local_execution_time)
@@ -45,7 +46,7 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 # df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('2pm.csv')
+df = pd.read_csv('1am.csv')
 csv_length = len(df)
 avg_speed = df['speed'].mean() 
 #avg_speed = 9
