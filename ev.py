@@ -48,7 +48,7 @@ print("local execution time:", local_execution_time)
 df = pd.read_csv('2pm.csv')
 csv_length = len(df)
 avg_speed = df['speed'].mean() 
-avg_speed = 9
+#avg_speed = 9
 print ('average speed: ' + str(avg_speed))
 deadline = math.ceil((blind_distance/avg_speed) * 1000) #in millisecond
 print ('deadline:', deadline)
