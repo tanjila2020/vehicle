@@ -11,8 +11,8 @@ import pandas as pd
 
 # parameter value
 # average configuration
-no_of_ap = 2  # parameter to calculate data size from sanaz paper
-no_of_servers = 4
+no_of_ap = 200  # parameter to calculate data size from sanaz paper
+no_of_servers = 300
 
 # peak configuration
 # no_of_ap = 177# parameter to calculate data size from sanaz paper
@@ -38,8 +38,9 @@ local_cpu_capacity = math.ceil(((v * (freq*1000) + o) * no_of_cores) * 0.001)
 local_execution_time = math.ceil(no_of_ins/local_cpu_capacity)  # in millisecond
 edge_speed_factor = 13
 edge_execution_time = math.ceil(local_execution_time/edge_speed_factor)  # in millisecond
-edge_execution_time = [16, 32]#, 48]
-clock = ["1am.csv", "5am.csv"]#, "3am.csv", "4am.csv", "5am.csv", "6am.csv"]
+edge_execution_time = [16, 32, 48, 64, 80, 96]#, 48]
+clock = ["1am.csv", "2am.csv", "3am.csv", "4am.csv", "5am.csv", "6am.csv", "7am.csv", "8am.csv", "9am.csv",
+ "10am.csv", "11am.csv", "12pm.csv", "1pm.csv", "2pm.csv", "3pm.csv", "4pm.csv", "5pm.csv", "6pm.csv", "7pm.csv", "8pm.csv", "9pm.csv"]
 
 result_csv = pd.DataFrame({
     "time_of_the_day": [],
@@ -246,12 +247,17 @@ for eet in edge_execution_time:
         total_demand = (total_jobs) * eet
         #total_transfer_time = (total_jobs - total_jobs_dropped) * transfer_time
         server_utilization = total_demand/span
+        if server_utilization >1:
+            server_utilization = 1
+        
         #ap_utilization = ((((total_transfer_time)/span) * no_of_servers)/no_of_ap)
         #print('Total generated jobs:', total_jobs)
         #print('total no of jobs dropped:', total_jobs_dropped)
         #print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
         #print('percentage of jobs dropped:', (total_jobs_dropped/total_jobs))
-        print('percentage of jobs missing deadline:', (deadline_missed_jobs/total_jobs))
+        percentage_missed_jobs = (deadline_missed_jobs/total_jobs)
+
+        print('percentage of jobs missing deadline:', percentage_missed_jobs)
         print('server utilization:', server_utilization)
         #print('bandwidth utilization:', ap_utilization)
 
@@ -261,7 +267,7 @@ for eet in edge_execution_time:
             "time_of_the_day": clk,
             "edge_exe_time": eet,
             "avg_response_time": total_avg_res_time,
-            "percentage_of_d_miss_jobs": (deadline_missed_jobs/total_jobs),
+            "percentage_of_d_miss_jobs": percentage_missed_jobs,
             "server_utilization": server_utilization,
         }, ignore_index=True)
         # embed()
