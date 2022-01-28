@@ -11,9 +11,8 @@ import pandas as pd
 
 # parameter value
 # average configuration
-no_of_ap =2# parameter to calculate data size from sanaz paper
-no_of_servers = 4
-
+no_of_ap =40# parameter to calculate data size from sanaz paper
+no_of_servers = 55
 # peak configuration
 # no_of_ap = 177# parameter to calculate data size from sanaz paper
 # no_of_servers = 121
@@ -25,7 +24,7 @@ data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
 bandwidth = 1000  # in Mbps (megabit) this is when we consider equal share(simple model to calc transfer rate)
 no_of_ins = 3000  # in millions
 #deadline = 200 #deadline is calculated later at line 52
-blind_distance = 2#in meters
+blind_distance = 8#in meters
 
 # calculating local and edge capacity
 v = 7.683
@@ -38,7 +37,7 @@ local_cpu_capacity = math.ceil(((v * (freq*1000) + o) * no_of_cores) * 0.001)
 local_execution_time = math.ceil(no_of_ins/local_cpu_capacity)  # in millisecond
 edge_speed_factor = 13
 edge_execution_time = math.ceil(local_execution_time/edge_speed_factor)  # in millisecond
-#edge_execution_time = 480
+edge_execution_time = 144
 
 print("edge execution time:", edge_execution_time)
 print("local execution time:", local_execution_time)
@@ -46,7 +45,7 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 # df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('1am.csv')
+df = pd.read_csv('9pm.csv')
 csv_length = len(df)
 avg_speed = df['speed'].mean() 
 #avg_speed = 9
@@ -238,6 +237,8 @@ total_jobs = len(queue)
 total_demand = (total_jobs) * edge_execution_time
 #total_transfer_time = (total_jobs - total_jobs_dropped) * transfer_time
 server_utilization = total_demand/span
+if server_utilization > 1:
+    server_utilization = 1
 #ap_utilization = ((((total_transfer_time)/span) * no_of_servers)/no_of_ap)
 #print('Total generated jobs:', total_jobs)
 #print('total no of jobs dropped:', total_jobs_dropped)
