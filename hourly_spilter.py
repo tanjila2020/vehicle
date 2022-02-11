@@ -5,7 +5,7 @@ from IPython import embed
 time_slots = [3635, 7200]
 offset = 0
 #no_of_rows =6000000
-no_of_rows =100000000
+no_of_rows =60000000
 time = 0
 
 while time < 90000:
