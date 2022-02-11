@@ -6,8 +6,8 @@ from IPython import embed
 
 # print("------")
 
-df = pd.read_csv("12am")
-last_row2 = df.iloc[-1:]
+df = pd.read_csv("7am.csv")
+last_row2 = df['time'].iloc[-1]
 print(last_row2) 
 
 time_array = df['time'].unique()

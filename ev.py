@@ -45,14 +45,14 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 # df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('9pm.csv')
+df = pd.read_csv('10am.csv')
 csv_length = len(df)
 avg_speed = df['speed'].mean() 
 #avg_speed = 9
 print ('average speed: ' + str(avg_speed))
 deadline = math.ceil((blind_distance/avg_speed) * 1000) #in millisecond
 print ('deadline:', deadline)
-print ('data size:', data_size)
+#print ('data size:', data_size)
 
 
 
@@ -64,25 +64,73 @@ df['transfer_time'] = None
 # finding unique timestamp to get the total no of vehicles in that time
 #thresold = 900
 #time_array = df['time'].unique()[:thresold]
-time_array = df['time'].unique()
+#time_array = df['time'].unique()
 vehicle_name_array = df['name'].unique()
 # print(vehicle_name_array)
 #print('total no of vehicles', len(vehicle_name_array))
 # print(time_array)
-max_time = np.amax(time_array)
-print('max time', max_time)
-min_time = np.amin(time_array)
-no_of_vehicles = len(vehicle_name_array)
+#max_time = np.amax(time_array)
+#print('max time', max_time)
+#min_time = np.amin(time_array)
+#no_of_vehicles = len(vehicle_name_array)
+#no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
+#no_of_vehicles= 231
+
+######finding the average no of vehicles in 3min interval from 900sec #######
+
+no_of_vehicles = 0
+interval = 180
+total_vehicles= 0
+start = df["time"].iloc[0]
+end = df["time"].iloc[-1]
+
+start_times= []
+end_times =[]
+
+
+for start_time in range(start, end, interval):
+  start_times.append(start_time)
+  end_time= start_time + (interval-1)
+  end_times.append(end_time)
+print("end times are:", end_times)  
+print("start times are:", start_times)
+no_of_intervals = len(start_times)
+
+for i in range(0, no_of_intervals):
+  total_vehicle_df = df.loc[(df['time'] >= start_times[i]) & (df['time'] <= end_times[i])]
+  total_vehicles += len(total_vehicle_df['name'].unique())
+  print(total_vehicles)
+ 
+
+no_of_vehicles += total_vehicles/no_of_intervals 
+no_of_vehicles = round(no_of_vehicles) #no_of_vehicles is actually the avg no of vehicles along the interval 
+print ("avg no of vehicles:", no_of_vehicles)
+  
+############
+
+
+
+
+
+
+
+
+#no_of_vehicles = len(vehicle_name_array)
 #no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
 #no_of_vehicles= 231
 temp_no_of_vehicles = round(no_of_vehicles/no_of_servers)
 if temp_no_of_vehicles == 0:
     temp_no_of_vehicles=1
 #temp_no_of_vehicles = 2
-print('no_of_vehicles', no_of_vehicles)
+
 print('temp_no_of_vehicles', temp_no_of_vehicles)
+
+ 
 #transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
-transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
+#transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
+
+######calculating transfer time based on only 1 access point scenario######
+transfer_rate2 = (bandwidth)/no_of_vehicles
 transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
 print("transfer time:", transfer_time)
 
@@ -94,7 +142,8 @@ vehicle_list = []
 
 # for i, row in df.loc[df['time'] == time_array[0]][0:temp_no_of_vehicles].iterrows():
 for name in vehicle_name_array[:temp_no_of_vehicles]:
-    transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
+    #transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
+    transfer_rate2 = (bandwidth)/no_of_vehicles
 
     v = vehicle(
         name=name,
@@ -107,7 +156,7 @@ for name in vehicle_name_array[:temp_no_of_vehicles]:
     )
     vehicle_list.append(v)
 
-print('Total vehicle count', len(vehicle_list))
+#print('Total vehicle count', len(vehicle_list))
 # print(*vehicle_list, sep='\n')
 
 '''
