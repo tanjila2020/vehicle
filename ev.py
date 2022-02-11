@@ -11,8 +11,9 @@ import pandas as pd
 
 # parameter value
 # average configuration
-no_of_ap =40# parameter to calculate data size from sanaz paper
-no_of_servers = 55
+no_of_ap =1# parameter to calculate data size from sanaz paper
+no_of_servers =6
+blind_distance = 16#in meters
 # peak configuration
 # no_of_ap = 177# parameter to calculate data size from sanaz paper
 # no_of_servers = 121
@@ -24,7 +25,7 @@ data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
 bandwidth = 1000  # in Mbps (megabit) this is when we consider equal share(simple model to calc transfer rate)
 no_of_ins = 3000  # in millions
 #deadline = 200 #deadline is calculated later at line 52
-blind_distance = 8#in meters
+
 
 # calculating local and edge capacity
 v = 7.683
@@ -37,15 +38,14 @@ local_cpu_capacity = math.ceil(((v * (freq*1000) + o) * no_of_cores) * 0.001)
 local_execution_time = math.ceil(no_of_ins/local_cpu_capacity)  # in millisecond
 edge_speed_factor = 13
 edge_execution_time = math.ceil(local_execution_time/edge_speed_factor)  # in millisecond
-edge_execution_time = 144
-
+edge_execution_time = 480
 print("edge execution time:", edge_execution_time)
 print("local execution time:", local_execution_time)
 #print("local_cpu_capacity:", local_cpu_capacity)
 
 # read vehicle data from csv
 # df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('10am.csv')
+df = pd.read_csv('4am.csv')
 csv_length = len(df)
 avg_speed = df['speed'].mean() 
 #avg_speed = 9
@@ -92,14 +92,14 @@ for start_time in range(start, end, interval):
   start_times.append(start_time)
   end_time= start_time + (interval-1)
   end_times.append(end_time)
-print("end times are:", end_times)  
-print("start times are:", start_times)
+# print("end times are:", end_times)  
+# print("start times are:", start_times)
 no_of_intervals = len(start_times)
 
 for i in range(0, no_of_intervals):
   total_vehicle_df = df.loc[(df['time'] >= start_times[i]) & (df['time'] <= end_times[i])]
   total_vehicles += len(total_vehicle_df['name'].unique())
-  print(total_vehicles)
+  #print(total_vehicles)
  
 
 no_of_vehicles += total_vehicles/no_of_intervals 
@@ -293,8 +293,10 @@ if server_utilization > 1:
 #print('total no of jobs dropped:', total_jobs_dropped)
 #print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
 #print('percentage of jobs dropped:', (total_jobs_dropped/total_jobs))
+max_safe_speed = blind_distance/(total_avg_res_time/1000)
 print('percentage of jobs missing deadline:', (deadline_missed_jobs/total_jobs))
 print('server utilization:', server_utilization)
+print('max safe speed:', max_safe_speed)
 #print('bandwidth utilization:', ap_utilization)
 
 #print('Average no of jobs dropped:  ', avg_job_drop )

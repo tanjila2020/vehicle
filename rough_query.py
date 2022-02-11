@@ -6,7 +6,10 @@ from IPython import embed
 
 # print("------")
 
-df = pd.read_csv("2am.csv")
+df = pd.read_csv("8am.csv")
+vehicle_name_array = df['name'].unique()
+print(len(vehicle_name_array))
+exit()
 last_row2 = df['time'].iloc[0]
 print(last_row2) 
 
