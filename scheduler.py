@@ -8,117 +8,11 @@ import random
 from IPython import embed
 from numpy.lib.function_base import piecewise
 import pandas as pd
+from pandas import ExcelWriter
+from pandas import ExcelFile
+from  csv_read import times, avg_no_of_vehicles, avg_speeds
 
-# parameter value
-# average configuration
-no_of_ap =1# parameter to calculate data size from sanaz paper
-no_of_servers =6
-blind_distance = 16#in meters
-# peak configuration
-# no_of_ap = 177# parameter to calculate data size from sanaz paper
-# no_of_servers = 121
-#no_of_vehicles= 25
-data_height = 200  # inpixel
-data_width = 300  # inpixel
-bit_depth = 30  # in bit
-data_size = (data_height * data_width * bit_depth) / 1000000  # in megabit (Mb)
-bandwidth = 1000  # in Mbps (megabit) this is when we consider equal share(simple model to calc transfer rate)
-no_of_ins = 3000  # in millions
-#deadline = 200 #deadline is calculated later at line 52
-
-
-# calculating local and edge capacity
-v = 7.683
-o = -4558.52
-freq = 2.5  # cpu frequency in GHz
-no_of_cores = 1
-# millons of instructions per milisecond
-local_cpu_capacity = math.ceil(((v * (freq*1000) + o) * no_of_cores) * 0.001)
-#local_cpu_speed = math.floor(local_cpu_speed)
-local_execution_time = math.ceil(no_of_ins/local_cpu_capacity)  # in millisecond
-edge_speed_factor = 13
-edge_execution_time = math.ceil(local_execution_time/edge_speed_factor)  # in millisecond
-edge_execution_time = 480
-print("edge execution time:", edge_execution_time)
-print("local execution time:", local_execution_time)
-#print("local_cpu_capacity:", local_cpu_capacity)
-
-# read vehicle data from csv
-# df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('7am.csv')
-csv_length = len(df)
-avg_speed = df['speed'].mean() 
-#avg_speed = 9
-print ('average speed: ' + str(avg_speed))
-deadline = math.ceil((blind_distance/avg_speed) * 1000) #in millisecond
-print ('deadline:', deadline)
-#print ('data size:', data_size)
-
-
-
-# new column made in csv
-df['transfer_time'] = None
-# df['avg_response_time'] = None
-# df['no_of_jobs_dropped'] = None
-
-# finding unique timestamp to get the total no of vehicles in that time
-#thresold = 900
-#time_array = df['time'].unique()[:thresold]
-#time_array = df['time'].unique()
-vehicle_name_array = df['name'].unique()
-# print(vehicle_name_array)
-#print('total no of vehicles', len(vehicle_name_array))
-# print(time_array)
-#max_time = np.amax(time_array)
-#print('max time', max_time)
-#min_time = np.amin(time_array)
-#no_of_vehicles = len(vehicle_name_array)
-#no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
-#no_of_vehicles= 231
-
-######finding the average no of vehicles in 3min interval from 900sec #######
-
-no_of_vehicles = 0
-interval = 180
-total_vehicles= 0
-start = df["time"].iloc[0]
-end = df["time"].iloc[-1]
-
-start_times= []
-end_times =[]
-
-
-for start_time in range(start, end, interval):
-  start_times.append(start_time)
-  end_time= start_time + (interval-1)
-  end_times.append(end_time)
-# print("end times are:", end_times)  
-# print("start times are:", start_times)
-no_of_intervals = len(start_times)
-
-for i in range(0, no_of_intervals):
-  total_vehicle_df = df.loc[(df['time'] >= start_times[i]) & (df['time'] <= end_times[i])]
-  total_vehicles += len(total_vehicle_df['name'].unique())
-  #print(total_vehicles)
- 
-
-no_of_vehicles += total_vehicles/no_of_intervals 
-no_of_vehicles = round(no_of_vehicles) #no_of_vehicles is actually the avg no of vehicles along the interval 
-print ("avg no of vehicles:", no_of_vehicles)
-  
-############
-
-
-
-
-
-
-
-
-#no_of_vehicles = len(vehicle_name_array)
-#no_of_vehicles = len(df[df['time'].isin(time_array)]['name'].unique())
-#no_of_vehicles= 231
-temp_no_of_vehicles = round(no_of_vehicles/no_of_servers)
+temp_no_of_vehicles = round(avg_no_of_vehicles/no_of_servers)
 if temp_no_of_vehicles == 0:
     temp_no_of_vehicles=1
 #temp_no_of_vehicles = 2
@@ -126,24 +20,21 @@ if temp_no_of_vehicles == 0:
 print('temp_no_of_vehicles', temp_no_of_vehicles)
 
  
-#transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
-#transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
-
-######calculating transfer time based on only 1 access point scenario######
-transfer_rate2 = (bandwidth)/no_of_vehicles
-transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
-print("transfer time:", transfer_time)
 
 
 
+
+
+df = pd.read_csv('7am.csv')
+vehicle_name_array = df['name'].unique()
 # making vehicle class to store its attributes
-vehicle = namedtuple('vehicle', 'name no_of_ins data_size edge_exe_time transfer_time period deadline')
+vehicle = namedtuple('vehicle', 'name edge_exe_time transfer_time period deadline')
 vehicle_list = []
 
 # for i, row in df.loc[df['time'] == time_array[0]][0:temp_no_of_vehicles].iterrows():
-for name in vehicle_name_array[:temp_no_of_vehicles]:
-    #transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
-    transfer_rate2 = (bandwidth)/no_of_vehicles
+# for name in vehicle_name_array[:temp_no_of_vehicles]:
+#     #transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
+#     transfer_rate2 = (bandwidth)/no_of_vehicles
 
     v = vehicle(
         name=name,
@@ -202,7 +93,7 @@ the job schedule should be like below:
 '''
 
 #span = period*temp_no_of_vehicles
-span = 70000
+span = 60000 #in ms (1min)
 #span = sum([vehicle.period for vehicle in vehicle_list])
 queue = []
 queued_vehicles = namedtuple(
@@ -297,8 +188,3 @@ max_safe_speed = blind_distance/(total_avg_res_time/1000)
 print('percentage of jobs missing deadline:', (deadline_missed_jobs/total_jobs))
 print('server utilization:', server_utilization)
 print('max safe speed:', max_safe_speed)
-#print('bandwidth utilization:', ap_utilization)
-
-#print('Average no of jobs dropped:  ', avg_job_drop )
-
-# embed()
