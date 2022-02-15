@@ -12,7 +12,7 @@ from pandas import ExcelWriter
 from pandas import ExcelFile
 from  csv_read import times, avg_no_of_vehicles, avg_speeds
 
-temp_no_of_vehicles = round(avg_no_of_vehicles/no_of_servers)
+temp_no_of_vehicles = round(avg_no_of_vehicles/no_of_server)
 if temp_no_of_vehicles == 0:
     temp_no_of_vehicles=1
 #temp_no_of_vehicles = 2
@@ -38,8 +38,8 @@ vehicle_list = []
 
     v = vehicle(
         name=name,
-        no_of_ins=no_of_ins,
-        data_size=data_size,
+        # no_of_ins=no_of_ins,
+        # data_size=data_size,
         edge_exe_time=edge_execution_time,
         transfer_time=math.ceil((data_size/transfer_rate2)*1000),
         period=0,
@@ -184,7 +184,7 @@ if server_utilization > 1:
 #print('total no of jobs dropped:', total_jobs_dropped)
 #print('Average no of jobs dropped:', ignored_job_count['jobs_dropped'].mean())
 #print('percentage of jobs dropped:', (total_jobs_dropped/total_jobs))
-max_safe_speed = blind_distance/(total_avg_res_time/1000)
+#max_safe_speed = blind_distance/(total_avg_res_time/1000)
 print('percentage of jobs missing deadline:', (deadline_missed_jobs/total_jobs))
 print('server utilization:', server_utilization)
-print('max safe speed:', max_safe_speed)
+#print('max safe speed:', max_safe_speed)
