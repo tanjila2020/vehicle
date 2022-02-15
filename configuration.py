@@ -11,6 +11,8 @@ import pandas as pd
 from pandas import ExcelWriter
 from pandas import ExcelFile
 from  csv_read import times, avg_no_of_vehicles, avg_speeds
+from scheduler import scheduling
+
 ####declaring and initializing arrays
 blind_d = [x for x in range(2, 17, 2)]
 deadlines = np.zeros((len(blind_d), len(times)))
@@ -39,8 +41,8 @@ for i in range(0,(len(blind_d))):
 
     for j in range(0,(len(times))):
         no_of_ap = 1- ap_inc
-        deadline_missed_jobs = 100
-        while (deadline_missed_jobs >0):
+        deadline_missed = 100
+        while (deadline_missed >0):
             no_of_ap += ap_inc
             transfer_rate = (bandwidth*no_of_ap)/(avg_no_of_vehicles[j])
             transfer_time = round(((data_size/transfer_rate)*1000))  # in millisecond
@@ -48,15 +50,16 @@ for i in range(0,(len(blind_d))):
             no_of_server= 1 - server_inc
             res_time = 0
             
-            while (deadline_missed_jobs >0 or res_time_var >0.05):
+            while (deadline_missed >0 or res_time_var >0.05):
                 no_of_server+= server_inc
-                call SCHEDULER(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicles[j], deadlines[i,j])
-                    ###output from the scheduler is two variable values(deadline_missed_jobs, total_avg_res_time)###
-                
-                res_time_temp = total_avg_res_time
-                Res_time_var = abs(res_time- res_time_temp )/ res_time_temp
+                deadline_missed, res_time_temp = scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicles[j], deadlines[i,j])
+                res_time_var = abs((res_time- res_time_temp )/ res_time_temp)
                 res_time= res_time_temp
         
+        # storing configurations
         c_ap[i,j] = no_of_ap
         c_ser[i,j] = no_of_server
         res_times[i,j] = res_time
+
+for i in range(0,(len(blind_d))):
+             
