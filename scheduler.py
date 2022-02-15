@@ -156,7 +156,8 @@ while (current_time < span):
             #print('---------', qt)
 
     job_no += 1
-
+if deadline_missed_jobs == 1:
+    deadline_missed_jobs = 0
 #print(*queue, sep='\n')
 
 #print(response_time_df)
