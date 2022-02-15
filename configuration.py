@@ -39,7 +39,7 @@ for i in range(0,(len(blind_d))):
 
     for j in range(0,(len(times))):
         no_of_ap = 1- ap_inc
-        deadline_missed_jobs = 0
+        deadline_missed_jobs = 100
         while (deadline_missed_jobs >0):
             no_of_ap += ap_inc
             transfer_rate = (bandwidth*no_of_ap)/(avg_no_of_vehicles[j])
