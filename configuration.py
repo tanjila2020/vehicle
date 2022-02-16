@@ -14,11 +14,15 @@ from  csv_read import times, avg_no_of_vehicles, avg_speeds
 from scheduler import scheduling
 
 ####declaring and initializing arrays
-blind_d = [x for x in range(2, 17, 2)]
+#for test:
+blind_d = [x for x in range(2, 5, 2)]
+#blind_d = [x for x in range(2, 17, 2)]
 deadlines = np.zeros((len(blind_d), len(times)))
 c_ap = np.zeros((len(blind_d), len(times)))
 c_ser = np.zeros((len(blind_d), len(times)))
 res_times = np.zeros((len(blind_d), len(times)))
+
+
 
 
 
@@ -27,15 +31,15 @@ for i in range(0,(len(blind_d))):
     for j in range(0,(len(times))):
         deadlines[i, j] = round(((blind_d[i]/avg_speeds[j])*1000))
 
-peak_vehicle_no = max(avg_no_of_vehicles)
-peak_time = avg_no_of_vehicles.index(peak_vehicle_no) #returns the index of the times array having max avg vehicle
-
+# peak_vehicle_no = max(avg_no_of_vehicles)
+# peak_time = avg_no_of_vehicles.index(peak_vehicle_no) #returns the index of the times array having max avg vehicle
+peak_time=2
 ###numeric input parameter
 data_size= 1.8 #megabits
 bandwidth = 1000 #in megabit per sec
 edge_execution_time = 16
 ap_inc = 2 # ap number increment to test
-server_inc = 5  # server number increment to test the server count
+server_inc = 2  # server number increment to test the server count
 
 for i in range(0,(len(blind_d))):
 
@@ -61,5 +65,33 @@ for i in range(0,(len(blind_d))):
         c_ser[i,j] = no_of_server
         res_times[i,j] = res_time
 
+
+
+#finding peak and avg configuration
+peak_aps=[]
+peak_sers= []
+c_ap_avg= []
+c_ser_avg= []
+
 for i in range(0,(len(blind_d))):
-             
+    p_ap = c_ap[i,peak_time]
+    peak_aps.append(p_ap)
+    p_ser = c_ser [i,peak_time]
+    peak_sers.append(p_ser)
+
+#print("peak ap", peak_aps)
+
+# df_config_ap = pd.DataFrame(c_ap)
+# print(df_config_ap)
+# df_config_ser = pd.DataFrame(c_ser)
+# peak_ap = df_config_ap[peak_time]
+
+
+c_ap_avg = np.round(c_ap.mean(axis=1))
+c_ser_avg = c_ap_avg = np.round(c_ser.mean(axis=1))
+
+
+
+print("peak ap", peak_ap)
+print ("avg servers:", c_ser_avg)    
+    
