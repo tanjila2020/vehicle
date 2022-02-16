@@ -10,9 +10,9 @@ hour = ["12am.csv", "1am.csv", "2am.csv", "3am.csv", "4am.csv", "5am.csv", "6am.
  "10am.csv", "11am.csv", "12pm.csv", "1pm.csv", "2pm.csv", "3pm.csv", "4pm.csv", "5pm.csv", "6pm.csv", "7pm.csv", "8pm.csv", "9pm.csv", "10pm.csv", "11pm.csv"]
 
 #for test
-times = [x for x in range(0, 4)]
+# times = [x for x in range(0, 4)]
 
-#times = [x for x in range(0, 24)]
+times = [x for x in range(0, 24)]
 
 
 

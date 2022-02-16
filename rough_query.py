@@ -1,52 +1,33 @@
+
 import pandas as pd
 from IPython import embed
-# data = pd.read_csv("5am.csv")
-# last_row = data.iloc[-1:]
-# print(last_row)
+import math
+import numpy as np
 
-# print("------")
+import numpy as np
+import math
 
-df = pd.read_csv("8am.csv")
-vehicle_name_array = df['name'].unique()
-print(len(vehicle_name_array))
-exit()
-last_row2 = df['time'].iloc[0]
-print(last_row2) 
-
-time_array = df['time'].unique()
-no_of_sec = len(time_array)
-print("no of sec:", no_of_sec)
+b= [2, 4, 5]
+t = [1,2,3,4,5]
+bb = len(b)
+tt= len(t)
 
 
-# offset = 0
-# #no_of_rows =6000000
-# no_of_rows =600000000
-# time = 0
-# df = pd.read_csv("koln-pruned.tr",
-#                     skiprows=offset, nrows=no_of_rows, header=None, delimiter=' ',
-#                     names=['time', "name", 'x', 'y', 'speed'],
-#                     dtype={"time": "int64", "name": "string", "x": "float64", "y": "float64"})
-# offset += no_of_rows
+c_ap = np.random.randint(1, 5, size=(bb, tt))
 
-# start_time = int(df['time'].head(1))
-# end_time = int(df['time'].tail(1))
+c_ser= np.random.randint(1, 5, size=(bb, tt))
 
-# print(start_time)  
 
-# print(end_time)    
+print(c_ap)
 
-# filtered = data.query('time >=28874 and time<= 29104+180')
-# vehicle_name_array = filtered['name'].unique()
-# print('total no of vehicles', len(vehicle_name_array))
-######## to calc avg no of vehicles in that excel file#####
-# avg = 0
-# for t in range(28874, 28893):
-#     tb1 = data.query('time==@t')
-#     tb2 = data.query('time==@t+180')
-#     a = set(tb1['name'])
-#     b = set(tb2['name'])
-#     c = a-b
-#     avg = avg+(len(c)/len(a))*100
-# print (avg)
+c_ap_avg =[]
+c_ap_avg = np.round(c_ap.mean(axis=1))
+# for i in range(0,2):
+#   print (c_ap_avg[i])
 
-  
+# df = pd.DataFrame(c_ap_avg, columns=['No_of_Ap'], index=['blind_d_array index'])
+df1 = pd.DataFrame(c_ap_avg)
+df2= pd.DataFrame(c_ser)
+print(df2)
+df1.to_csv('file_name.csv')
+df2.to_csv('file_name.csv')

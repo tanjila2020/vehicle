@@ -10,13 +10,14 @@ from numpy.lib.function_base import piecewise
 import pandas as pd
 from pandas import ExcelWriter
 from pandas import ExcelFile
+from pyrsistent import v
 from  csv_read import times, avg_no_of_vehicles, avg_speeds
 from scheduler import scheduling
 
 ####declaring and initializing arrays
 #for test:
-blind_d = [x for x in range(2, 5, 2)]
-#blind_d = [x for x in range(2, 17, 2)]
+#blind_d = [x for x in range(2, 5, 2)]
+blind_d = [x for x in range(2, 17, 2)]
 deadlines = np.zeros((len(blind_d), len(times)))
 c_ap = np.zeros((len(blind_d), len(times)))
 c_ser = np.zeros((len(blind_d), len(times)))
@@ -31,9 +32,9 @@ for i in range(0,(len(blind_d))):
     for j in range(0,(len(times))):
         deadlines[i, j] = round(((blind_d[i]/avg_speeds[j])*1000))
 
-# peak_vehicle_no = max(avg_no_of_vehicles)
-# peak_time = avg_no_of_vehicles.index(peak_vehicle_no) #returns the index of the times array having max avg vehicle
-peak_time=2
+peak_vehicle_no = max(avg_no_of_vehicles)
+peak_time = avg_no_of_vehicles.index(peak_vehicle_no) #returns the index of the times array having max avg vehicle
+#peak_time=2
 ###numeric input parameter
 data_size= 1.8 #megabits
 bandwidth = 1000 #in megabit per sec
@@ -91,7 +92,20 @@ c_ap_avg = np.round(c_ap.mean(axis=1))
 c_ser_avg = c_ap_avg = np.round(c_ser.mean(axis=1))
 
 
+#writing all the results in csv files
+df1= pd.DataFrame(c_ap)
+df2= pd.DataFrame(c_ser)
+df3= pd.DataFrame(res_times)
+df4= pd.DataFrame(c_ap_avg)
+df5 = pd.DataFrame(c_ser_avg) 
+df6 = pd.DataFrame(peak_aps)
+df7= pd.DataFrame(peak_sers)
 
-print("peak ap", peak_ap)
-print ("avg servers:", c_ser_avg)    
+df1.to_csv('config_ap.csv')
+df2.to_csv('config_server.csv')
+df3.to_csv('response_times.csv')
+df4.to_csv('avg_ap.csv')
+df5.to_csv('avg_server.csv')
+df6.to_csv('peak_ap.csv')
+df7.to_csv('peak server.csv')
     
