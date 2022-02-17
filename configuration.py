@@ -56,7 +56,7 @@ for i in range(0,(len(blind_d))):
             res_time = 0
             print("in 1st while loop")
             
-            while (deadline_missed >0 or res_time_var >0.05):
+            while (deadline_missed >0 and res_time_var >0.03):
                 no_of_server+= server_inc
                 deadline_missed, res_time_temp = scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicles[j], deadlines[i,j])
                 res_time_var = abs((res_time- res_time_temp )/ res_time_temp)
