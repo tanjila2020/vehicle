@@ -32,9 +32,9 @@ for i in range(0,(len(blind_d))):
     for j in range(0,(len(times))):
         deadlines[i, j] = round(((blind_d[i]/avg_speeds[j])*1000))
 
-# peak_vehicle_no = max(avg_no_of_vehicles)
-# peak_time = avg_no_of_vehicles.index(peak_vehicle_no) #returns the index of the times array having max avg vehicle
-#peak_time=2
+peak_vehicle_no = max(avg_no_of_vehicles)
+peak_time = avg_no_of_vehicles.index(peak_vehicle_no) #returns the index of the times array having max avg vehicle
+# peak_time=2
 ###numeric input parameter
 data_size= 1.8 #megabits
 bandwidth = 1000 #in megabit per sec
@@ -70,44 +70,46 @@ for i in range(0,(len(blind_d))):
 
 
 
-#finding peak and avg configuration
-# peak_aps=[]
-# peak_sers= []
-# c_ap_avg= []
-# c_ser_avg= []
+# #finding peak and avg configuration
+peak_aps=[]
+peak_sers= []
+c_ap_avg= []
+c_ser_avg= []
 
-# for i in range(0,(len(blind_d))):
-#     p_ap = c_ap[i,peak_time]
-#     peak_aps.append(p_ap)
-#     p_ser = c_ser [i,peak_time]
-#     peak_sers.append(p_ser)
+for i in range(0,(len(blind_d))):
+    p_ap = c_ap[i,peak_time]
+    peak_aps.append(p_ap)
+    p_ser = c_ser [i,peak_time]
+    peak_sers.append(p_ser)
 
-# #print("peak ap", peak_aps)
+#print("peak ap", peak_aps)
 
-# # df_config_ap = pd.DataFrame(c_ap)
-# # print(df_config_ap)
-# # df_config_ser = pd.DataFrame(c_ser)
-# # peak_ap = df_config_ap[peak_time]
+df_config_ap = pd.DataFrame(c_ap)
+print(df_config_ap)
+df_config_ser = pd.DataFrame(c_ser)
+peak_ap = df_config_ap[peak_time]
 
 
-# c_ap_avg = np.round(c_ap.mean(axis=1))
-# c_ser_avg = c_ap_avg = np.round(c_ser.mean(axis=1))
+c_ap_avg = np.round(c_ap.mean(axis=1))
+c_ser_avg = c_ap_avg = np.round(c_ser.mean(axis=1))
 
 
 #writing all the results in csv files
 df1= pd.DataFrame(c_ap)
 df2= pd.DataFrame(c_ser)
 df3= pd.DataFrame(res_times)
-# df4= pd.DataFrame(c_ap_avg)
-# df5 = pd.DataFrame(c_ser_avg) 
-# df6 = pd.DataFrame(peak_aps)
-# df7= pd.DataFrame(peak_sers)
+df4= pd.DataFrame(c_ap_avg)
+df5 = pd.DataFrame(c_ser_avg) 
+df6 = pd.DataFrame(peak_aps)
+df7= pd.DataFrame(peak_sers)
+
+print(df7)
 
 df1.to_csv('config_ap_12am_to_6am.csv')
 df2.to_csv('config_server_12am_to_6am.csv')
 df3.to_csv('response_times_12am_to_6am.csv')
-# df4.to_csv('avg_ap.csv')
-# df5.to_csv('avg_server.csv')
-# df6.to_csv('peak_ap.csv')
-# df7.to_csv('peak server.csv')
+df4.to_csv('avg_ap.csv')
+df5.to_csv('avg_server.csv')
+df6.to_csv('peak_ap.csv')
+df7.to_csv('peak server.csv')
     
