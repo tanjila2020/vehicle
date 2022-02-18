@@ -53,6 +53,22 @@ for i in range(0,(len(blind_d))):
         max_speed[i,j] = blind_d[i]/avg_res
         max_speed[i,j] = round(max_speed[i,j], 2)
 
+
+#writing all the results in csv files
+dff1= pd.DataFrame(perc_deadline_miss)
+dff2= pd.DataFrame(avg_res_times)
+dff3= pd.DataFrame(utilize_servers)
+dff4= pd.DataFrame(max_speed)
+
+
+print(dff4)
+
+dff1.to_csv('percentage_deadline_miss.csv')
+dff2.to_csv('avg_response.csv')
+dff3.to_csv('server_utilization.csv')
+dff4.to_csv('max_safe_speed.csv')
+
+
 print("percentage of deadline_miss:", perc_deadline_miss)
 print("avg response time:", avg_res_times)
 print("server utilization:", utilize_servers)
