@@ -40,7 +40,7 @@ data_size= 1.8 #megabits
 bandwidth = 1000 #in megabit per sec
 edge_execution_time = 16
 ap_inc = 2 # ap number increment to test
-server_inc = 2  # server number increment to test the server count
+server_inc = 5  # server number increment to test the server count
 
 for i in range(0,(len(blind_d))):
 
@@ -82,16 +82,20 @@ for i in range(0,(len(blind_d))):
     p_ser = c_ser [i,peak_time]
     peak_sers.append(p_ser)
 
-#print("peak ap", peak_aps)
 
-df_config_ap = pd.DataFrame(c_ap)
-print(df_config_ap)
-df_config_ser = pd.DataFrame(c_ser)
-peak_ap = df_config_ap[peak_time]
+
+
+
 
 
 c_ap_avg = np.round(c_ap.mean(axis=1))
-c_ser_avg = c_ap_avg = np.round(c_ser.mean(axis=1))
+c_ser_avg = np.round(c_ser.mean(axis=1))
+
+print("peak ap:", peak_aps)
+print("peak server:", peak_sers)
+print("average ap", c_ap_avg)
+print("average server", c_ser_avg)
+
 
 
 #writing all the results in csv files
@@ -105,9 +109,9 @@ df7= pd.DataFrame(peak_sers)
 
 print(df7)
 
-df1.to_csv('config_ap_12am_to_6am.csv')
-df2.to_csv('config_server_12am_to_6am.csv')
-df3.to_csv('response_times_12am_to_6am.csv')
+df1.to_csv('config_ap.csv')
+df2.to_csv('config_server.csv')
+df3.to_csv('response_times.csv')
 df4.to_csv('avg_ap.csv')
 df5.to_csv('avg_server.csv')
 df6.to_csv('peak_ap.csv')

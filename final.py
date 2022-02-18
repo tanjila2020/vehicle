@@ -20,3 +20,11 @@ from scheduler import scheduling
 blind_d = [x for x in range(2, 17, 2)]
 deadlines = np.zeros((len(blind_d), len(times)))
 perc_deadline_miss = np.zeros((len(blind_d), len(times)))
+max_speed = np.zeros((len(blind_d), len(times))) 
+utilize_servers = np.zeros((len(blind_d), len(times))) 
+
+c_ap_avg =
+c_ser_avg =
+
+peak_aps = 
+peak_sers =
