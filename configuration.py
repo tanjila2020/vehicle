@@ -43,8 +43,10 @@ ap_inc = 2 # ap number increment to test
 server_inc = 5  # server number increment to test the server count
 
 for i in range(0,(len(blind_d))):
+    print("current blind_distance", i)
 
     for j in range(0,(len(times))):
+        print("current time of the day:", j)
         no_of_ap = 1- ap_inc
         deadline_missed = 100
         while (deadline_missed >0):
