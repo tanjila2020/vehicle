@@ -41,29 +41,42 @@ bandwidth = 1000 #in megabit per sec
 edge_execution_time = 16
 ap_inc = 2 # ap number increment to test
 server_inc = 5  # server number increment to test the server count
+start_time = time.time()
 
 for i in range(0,(len(blind_d))):
     print("current blind_distance", i)
 
     for j in range(0,(len(times))):
-        print("current time of the day:", j)
-        no_of_ap = 1- ap_inc
+        print("current blind_d and  time of the day:", i, j)
+        transfer_time = (deadlines[i, j] - 2*edge_execution_time)
+        no_of_ap = round((data_size*1000*avg_no_of_vehicles[j])/(transfer_time*bandwidth))
+        no_of_ap = no_of_ap- ap_inc
         deadline_missed = 100
+        offset =0
         while (deadline_missed >0):
+            print("in 1st while loop for blind_d and time", i, j)
             no_of_ap += ap_inc
             transfer_rate = (bandwidth*no_of_ap)/(avg_no_of_vehicles[j])
             transfer_time = round(((data_size/transfer_rate)*1000))  # in millisecond
             res_time_var = 100
-            no_of_server= 1 - server_inc
+            no_of_server= 1- server_inc + offset
+            if no_of_server < 0:
+                no_of_server = 1
             res_time = 0
-            print("in 1st while loop")
-            
-            while (deadline_missed >0 and res_time_var >0.03):
+
+            print("no of ap after 1st while loop for blind d and time", no_of_ap)
+            print("no of server before second while loop", no_of_server)
+
+            while (deadline_missed >0 and res_time_var >0.005):
                 no_of_server+= server_inc
                 deadline_missed, res_time_temp = scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicles[j], deadlines[i,j])
                 res_time_var = abs((res_time- res_time_temp )/ res_time_temp)
                 res_time= res_time_temp
                 print("in 2nd while loop")
+                print("transfer time:", transfer_time)
+                print("no of servers after 2nd while loop,", no_of_server)
+            offset = no_of_server-4
+
         
         # storing configurations
         c_ap[i,j] = no_of_ap
@@ -71,7 +84,7 @@ for i in range(0,(len(blind_d))):
         res_times[i,j] = res_time
 
 
-
+print("--- %s seconds ---" % (time.time() - start_time))
 # #finding peak and avg configuration
 peak_aps=[]
 peak_sers= []
