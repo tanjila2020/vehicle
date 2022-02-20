@@ -13,6 +13,7 @@ from pandas import ExcelFile
 from pyrsistent import v
 from  csv_read import times, avg_no_of_vehicles, avg_speeds
 from scheduler import scheduling
+import time
 
 ####declaring and initializing arrays
 #for test:
