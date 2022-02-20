@@ -23,6 +23,8 @@ deadlines = np.zeros((len(blind_d), len(times)))
 c_ap = np.zeros((len(blind_d), len(times)))
 c_ser = np.zeros((len(blind_d), len(times)))
 res_times = np.zeros((len(blind_d), len(times)))
+transfer_times = np.zeros((len(blind_d), len(times))) 
+
 
 
 
@@ -50,15 +52,21 @@ for i in range(0,(len(blind_d))):
     for j in range(0,(len(times))):
         print("current blind_d and  time of the day:", i, j)
         transfer_time = (deadlines[i, j] - 2*edge_execution_time)
-        no_of_ap = round((data_size*1000*avg_no_of_vehicles[j])/(transfer_time*bandwidth))
+        print("deadline", deadlines[i,j])
+        print("transfer time", transfer_time)
+        no_of_ap = math.ceil((data_size*1000*avg_no_of_vehicles[j])/(transfer_time*bandwidth))
+        # print("average number of vehicles", avg_no_of_vehicles[j])
         no_of_ap = no_of_ap- ap_inc
         deadline_missed = 100
         offset =0
         while (deadline_missed >0):
             print("in 1st while loop for blind_d and time", i, j)
             no_of_ap += ap_inc
+            print("no of ap", no_of_ap)
             transfer_rate = (bandwidth*no_of_ap)/(avg_no_of_vehicles[j])
+            # print("transfer rate", transfer_rate)
             transfer_time = round(((data_size/transfer_rate)*1000))  # in millisecond
+            print("transfer time", transfer_time)
             res_time_var = 100
             no_of_server= 1- server_inc + offset
             if no_of_server < 0:
@@ -83,6 +91,7 @@ for i in range(0,(len(blind_d))):
         c_ap[i,j] = no_of_ap
         c_ser[i,j] = no_of_server
         res_times[i,j] = res_time
+        transfer_times[i,j] = transfer_time
 
 
 print("--- %s seconds ---" % (time.time() - start_time))
@@ -122,6 +131,7 @@ df4= pd.DataFrame(c_ap_avg)
 df5 = pd.DataFrame(c_ser_avg) 
 df6 = pd.DataFrame(peak_aps)
 df7= pd.DataFrame(peak_sers)
+df8 = pd.DataFrame(transfer_times)
 
 print(df7)
 
@@ -132,4 +142,6 @@ df4.to_csv('avg_ap.csv')
 df5.to_csv('avg_server.csv')
 df6.to_csv('peak_ap.csv')
 df7.to_csv('peak server.csv')
+df8.to_csv('transfer times.csv')
+    
     
