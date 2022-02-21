@@ -50,7 +50,7 @@ for i in range(0,(len(blind_d))):
     print("current blind_distance", i)
 
     for j in range(0,(len(times))):
-        print("current blind_d and  time of the day:", i, j)
+        
         transfer_time = (deadlines[i, j] - 2*edge_execution_time)
         print("deadline", deadlines[i,j])
         print("transfer time", transfer_time)
@@ -60,7 +60,7 @@ for i in range(0,(len(blind_d))):
         deadline_missed = 100
         offset =0
         while (deadline_missed >0):
-            print("in 1st while loop for blind_d and time", i, j)
+            
             no_of_ap += ap_inc
             print("no of ap", no_of_ap)
             transfer_rate = (bandwidth*no_of_ap)/(avg_no_of_vehicles[j])
@@ -81,6 +81,8 @@ for i in range(0,(len(blind_d))):
                 deadline_missed, res_time_temp = scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicles[j], deadlines[i,j])
                 res_time_var = abs((res_time- res_time_temp )/ res_time_temp)
                 res_time= res_time_temp
+                print("blind_distance", i)
+                print("time", j)
                 print("in 2nd while loop")
                 print("transfer time:", transfer_time)
                 print("no of servers after 2nd while loop,", no_of_server)
