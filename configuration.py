@@ -135,7 +135,7 @@ df6 = pd.DataFrame(peak_aps)
 df7= pd.DataFrame(peak_sers)
 df8 = pd.DataFrame(transfer_times)
 
-print(df7)
+print("peak servers:",df7)
 
 df1.to_csv('config_ap.csv')
 df2.to_csv('config_server.csv')
