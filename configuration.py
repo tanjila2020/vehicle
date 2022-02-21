@@ -43,7 +43,7 @@ data_size= 1.8 #megabits
 bandwidth = 1000 #in megabit per sec
 edge_execution_time = 16
 ap_inc = 2 # ap number increment to test
-server_inc = 5  # server number increment to test the server count
+server_inc = 3  # server number increment to test the server count
 start_time = time.time()
 
 for i in range(0,(len(blind_d))):
@@ -84,7 +84,7 @@ for i in range(0,(len(blind_d))):
                 print("in 2nd while loop")
                 print("transfer time:", transfer_time)
                 print("no of servers after 2nd while loop,", no_of_server)
-            offset = no_of_server-4
+            offset = no_of_server-6
 
         
         # storing configurations
