@@ -109,8 +109,8 @@ def scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_n
                 #print('---------', qt)
 
         job_no += 1
-    if deadline_missed_jobs == 1:
-        deadline_missed_jobs = 0
+    # if deadline_missed_jobs == 1:
+    #     deadline_missed_jobs = 0
     #print(*queue, sep='\n')
 
     
