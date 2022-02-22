@@ -11,9 +11,9 @@ import pandas as pd
 
 # parameter value
 # average configuration
-no_of_ap =1# parameter to calculate data size from sanaz paper
-no_of_servers =6
-blind_distance = 16#in meters
+no_of_ap =95# parameter to calculate data size from sanaz paper
+no_of_servers =219
+blind_distance = 2#in meters
 # peak configuration
 # no_of_ap = 177# parameter to calculate data size from sanaz paper
 # no_of_servers = 121
@@ -38,14 +38,14 @@ local_cpu_capacity = math.ceil(((v * (freq*1000) + o) * no_of_cores) * 0.001)
 local_execution_time = math.ceil(no_of_ins/local_cpu_capacity)  # in millisecond
 edge_speed_factor = 13
 edge_execution_time = math.ceil(local_execution_time/edge_speed_factor)  # in millisecond
-edge_execution_time = 480
+edge_execution_time = 16
 print("edge execution time:", edge_execution_time)
 print("local execution time:", local_execution_time)
 #print("local_cpu_capacity:", local_cpu_capacity)
 
 # read vehicle data from csv
 # df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('7am.csv')
+df = pd.read_csv('4pm.csv')
 csv_length = len(df)
 avg_speed = df['speed'].mean() 
 #avg_speed = 9
@@ -127,10 +127,10 @@ print('temp_no_of_vehicles', temp_no_of_vehicles)
 
  
 #transfer_rate2 = (bandwidth*no_of_ap)/temp_no_of_vehicles
-#transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
+transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
 
 ######calculating transfer time based on only 1 access point scenario######
-transfer_rate2 = (bandwidth)/no_of_vehicles
+#transfer_rate2 = (bandwidth)/no_of_vehicles
 transfer_time = math.ceil((data_size/transfer_rate2)*1000)  # in millisecond
 print("transfer time:", transfer_time)
 
@@ -143,14 +143,15 @@ vehicle_list = []
 # for i, row in df.loc[df['time'] == time_array[0]][0:temp_no_of_vehicles].iterrows():
 for name in vehicle_name_array[:temp_no_of_vehicles]:
     #transfer_rate2 = (bandwidth*no_of_ap)/no_of_vehicles
-    transfer_rate2 = (bandwidth)/no_of_vehicles
+    # transfer_rate2 = (bandwidth)/no_of_vehicles
 
     v = vehicle(
         name=name,
         no_of_ins=no_of_ins,
         data_size=data_size,
         edge_exe_time=edge_execution_time,
-        transfer_time=math.ceil((data_size/transfer_rate2)*1000),
+        # transfer_time=math.ceil((data_size/transfer_rate2)*1000),
+        transfer_time= transfer_time,
         period=0,
         deadline=deadline
     )

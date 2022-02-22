@@ -43,18 +43,20 @@ data_size= 1.8 #megabits
 bandwidth = 1000 #in megabit per sec
 edge_execution_time = 16
 ap_inc = 2 # ap number increment to test
-server_inc = 3  # server number increment to test the server count
+server_inc = 5  # server number increment to test the server count
 start_time = time.time()
 
 for i in range(0,(len(blind_d))):
     print("current blind_distance", i)
 
     for j in range(0,(len(times))):
+
+        print("time:", j)
         
-        transfer_time = (deadlines[i, j] - 2*edge_execution_time)
+        transfer_time_max = (deadlines[i, j] - 2*edge_execution_time)
         print("deadline", deadlines[i,j])
-        print("transfer time", transfer_time)
-        no_of_ap = math.ceil((data_size*1000*avg_no_of_vehicles[j])/(transfer_time*bandwidth))
+        print("transfer time max:", transfer_time_max)
+        no_of_ap = math.ceil((data_size*1000*avg_no_of_vehicles[j])/(transfer_time_max*bandwidth))
         # print("average number of vehicles", avg_no_of_vehicles[j])
         no_of_ap = no_of_ap- ap_inc
         deadline_missed = 100
@@ -73,7 +75,7 @@ for i in range(0,(len(blind_d))):
                 no_of_server = 1
             res_time = 0
 
-            print("no of ap after 1st while loop for blind d and time", no_of_ap)
+            print("no of ap after 1st while loop ", no_of_ap)
             print("no of server before second while loop", no_of_server)
 
             while (deadline_missed >0 and res_time_var >0.005):
@@ -86,7 +88,7 @@ for i in range(0,(len(blind_d))):
                 print("in 2nd while loop")
                 print("transfer time:", transfer_time)
                 print("no of servers after 2nd while loop,", no_of_server)
-            offset = no_of_server-6
+            offset = no_of_server-4
 
         
         # storing configurations
@@ -119,6 +121,7 @@ c_ap_avg = np.round(c_ap.mean(axis=1))
 c_ser_avg = np.round(c_ser.mean(axis=1))
 
 print("peak ap:", peak_aps)
+print("config server", c_ser)
 print("peak server:", peak_sers)
 print("average ap", c_ap_avg)
 print("average server", c_ser_avg)
