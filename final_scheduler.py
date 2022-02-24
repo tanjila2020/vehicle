@@ -133,8 +133,8 @@ def final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time,
     if server_utilization > 1:
         server_utilization = 1
 
-    percent_deadline_missed_jobs = deadline_missed_jobs/total_jobs  
-    percent_deadline_missed_jobs = round(percent_deadline_missed_jobs, 2)  
+    percent_deadline_missed_jobs = (deadline_missed_jobs/total_jobs) 
+    percent_deadline_missed_jobs = round(percent_deadline_missed_jobs, 7)  
     #ap_utilization = ((((total_transfer_time)/span) * no_of_servers)/no_of_ap)
     #print('Total generated jobs:', total_jobs)
     #print('total no of jobs dropped:', total_jobs_dropped)

@@ -29,11 +29,29 @@ for i in range(0,(len(blind_d))):
     for j in range(0,(len(times))):
         deadlines[i, j] = round(((blind_d[i]/avg_speeds[j])*1000))
 
-c_ap_avg =
-c_ser_avg =
 
-peak_aps = 
-peak_sers =
+c_ap_avg= np.genfromtxt('avg_ap.csv', delimiter=",")
+c_ser_avg= np.genfromtxt('avg_server.csv', delimiter=",")
+
+c_ap= np.genfromtxt('config_ap1.csv', delimiter=",")
+c_ser= np.genfromtxt('config_server1.csv', delimiter=",")
+
+peak_aps = (c_ap.max(axis=1))
+peak_sers = (c_ser.max(axis=1))
+
+
+
+
+
+
+
+   
+# exit()   
+
+
+
+
+
 
 data_size= 1.8 #megabits
 bandwidth = 1000 #in megabit per sec
