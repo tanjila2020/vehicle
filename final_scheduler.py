@@ -130,6 +130,7 @@ def final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time,
     total_demand = (total_jobs) * edge_execution_time
     #total_transfer_time = (total_jobs - total_jobs_dropped) * transfer_time
     server_utilization = total_demand/span
+    server_utilization = round(server_utilization, 4)
     if server_utilization > 1:
         server_utilization = 1
 

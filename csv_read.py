@@ -15,7 +15,7 @@ hour = ["12am.csv", "1am.csv", "2am.csv", "3am.csv", "4am.csv", "5am.csv", "6am.
 
 #for test
 # times = [x for x in range(0, 7)]
-
+# times = [x for x in range(0, 5)]
 times = [x for x in range(0, 24)]
 
 
