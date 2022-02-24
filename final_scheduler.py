@@ -20,7 +20,7 @@ from  csv_read import times, avg_no_of_vehicles, avg_speeds
 def final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicle, deadline):
 
 
-    temp_no_of_vehicles = round(avg_no_of_vehicle/no_of_server)#finding the no of vehicles per server
+    temp_no_of_vehicles = np.round(avg_no_of_vehicle/no_of_server)#finding the no of vehicles per server
     if temp_no_of_vehicles == 0:
         temp_no_of_vehicles=1
     #temp_no_of_vehicles = 2
