@@ -59,6 +59,8 @@ edge_execution_time = 16
 
 for i in range(0,(len(blind_d))):
     for j in range(0,(len(times))):
+        print("blind distance: ", i)
+        print("time: ", j)
         transfer_rate = (bandwidth*c_ap_avg[i])/(avg_no_of_vehicles[j])
         transfer_time = round(((data_size/transfer_rate)*1000))  # in millisecond
         no_of_ap = c_ap_avg[i]
@@ -69,7 +71,7 @@ for i in range(0,(len(blind_d))):
         avg_res_times[i,j] = avg_res
         utilize_servers[i,j] = server_util
         max_speed[i,j] = blind_d[i]/avg_res
-        max_speed[i,j] = round(max_speed[i,j], 2)
+        max_speed[i,j] = round(max_speed[i,j], 3)
 
 
 #writing all the results in csv files
@@ -81,10 +83,10 @@ dff4= pd.DataFrame(max_speed)
 
 print(dff4)
 
-dff1.to_csv('percentage_deadline_miss.csv')
-dff2.to_csv('avg_response.csv')
-dff3.to_csv('server_utilization.csv')
-dff4.to_csv('max_safe_speed.csv')
+dff1.to_csv('percentage_deadline_miss_avg.csv')
+dff2.to_csv('avg_response_avg.csv')
+dff3.to_csv('server_utilization_avg.csv')
+dff4.to_csv('max_safe_speed_avg.csv')
 
 
 print("percentage of deadline_miss:", perc_deadline_miss)
