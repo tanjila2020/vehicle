@@ -62,7 +62,7 @@ for i in range(0,(len(blind_d))):
         print("blind distance: ", i)
         print("time: ", j)
         transfer_rate = (bandwidth*c_ap_avg[i])/(avg_no_of_vehicles[j])
-        transfer_time = round(((data_size/transfer_rate)*1000))  # in millisecond
+        transfer_time = np.round(((data_size/transfer_rate)*1000))  # in millisecond
         no_of_ap = c_ap_avg[i]
         no_of_server = c_ser_avg[i]
         pers_d_miss, avg_res, server_util = final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicles[j], deadlines[i,j])
