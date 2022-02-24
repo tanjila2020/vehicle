@@ -11,8 +11,8 @@ import pandas as pd
 
 # parameter value
 # average configuration
-no_of_ap =103# parameter to calculate data size from sanaz paper
-no_of_servers =227
+no_of_ap =39# parameter to calculate data size from sanaz paper
+no_of_servers =102
 blind_distance = 2#in meters
 # peak configuration
 # no_of_ap = 177# parameter to calculate data size from sanaz paper
@@ -45,7 +45,7 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 # df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('4pm.csv')
+df = pd.read_csv('5am.csv')
 csv_length = len(df)
 avg_speed = df['speed'].mean() 
 #avg_speed = 9

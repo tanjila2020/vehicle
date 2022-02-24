@@ -18,13 +18,11 @@ import random
 from  csv_read import times, avg_no_of_vehicles, avg_speeds
 
 def final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicle, deadline):
-
-
-    temp_no_of_vehicles = np.round(avg_no_of_vehicle/no_of_server)#finding the no of vehicles per server
+    temp_no_of_vehicles = int(np.round(avg_no_of_vehicle/no_of_server))#finding the no of vehicles per server
     if temp_no_of_vehicles == 0:
         temp_no_of_vehicles=1
     #temp_no_of_vehicles = 2
-
+    print ("temp no of vehicles:", temp_no_of_vehicles)
     df = pd.read_csv('7am.csv')
     vehicle_name_array = df['name'].unique()
     # making vehicle class to store its attributes
@@ -130,9 +128,14 @@ def final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time,
     total_demand = (total_jobs) * edge_execution_time
     #total_transfer_time = (total_jobs - total_jobs_dropped) * transfer_time
     server_utilization = total_demand/span
-    server_utilization = round(server_utilization, 4)
+    if no_of_server > avg_no_of_vehicle:
+        server_utilization= server_utilization/no_of_server
+    
     if server_utilization > 1:
         server_utilization = 1
+    
+    server_utilization = round(server_utilization, 4)
+     
 
     percent_deadline_missed_jobs = (deadline_missed_jobs/total_jobs) 
     percent_deadline_missed_jobs = round(percent_deadline_missed_jobs, 7)  
