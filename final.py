@@ -31,8 +31,8 @@ for i in range(0,(len(blind_d))):
         deadlines[i, j] = round(((blind_d[i]/avg_speeds[j])*1000))
 
 
-c_ap_avg= np.genfromtxt('avg_ap1.csv', delimiter=",")
-c_ser_avg= np.genfromtxt('avg_server1.csv', delimiter=",")
+# c_ap_avg= np.genfromtxt('avg_ap1.csv', delimiter=",")
+# c_ser_avg= np.genfromtxt('avg_server1.csv', delimiter=",")
 
 # print(c_ap_avg[0])
 
@@ -40,8 +40,8 @@ c_ser_avg= np.genfromtxt('avg_server1.csv', delimiter=",")
 c_ap= np.genfromtxt('config_ap1.csv', delimiter=",")
 c_ser= np.genfromtxt('config_server1.csv', delimiter=",")
 
-# peak_aps = (c_ap.max(axis=1))
-# peak_sers = (c_ser.max(axis=1))
+peak_aps = (c_ap.max(axis=1))
+peak_sers = (c_ser.max(axis=1))
 # print(peak_aps[4])
 # exit()
 
@@ -67,12 +67,14 @@ for i in range(0,(len(blind_d))):
     for j in range(0,(len(times))):
         print("blind distance: ", i)
         print("time: ", j)
-        no_of_ap = c_ap_avg[i]
+        # no_of_ap = c_ap_avg[i]
+        no_of_ap = peak_aps[i]
         print(" no of ap,", no_of_ap)
         transfer_rate = (bandwidth*no_of_ap)/(avg_no_of_vehicles[j])
         transfer_time = math.ceil((data_size/transfer_rate)*1000)  # in millisecond
         print("transfer_time,", transfer_time)
-        no_of_server = c_ser_avg[i]
+        # no_of_server = c_ser_avg[i]
+        no_of_server = peak_sers[i]
         print("no of server,", no_of_server)
         # exit()
         pers_d_miss, avg_res, server_util = final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicles[j], deadlines[i,j])
@@ -80,7 +82,7 @@ for i in range(0,(len(blind_d))):
         perc_deadline_miss[i,j] = pers_d_miss
         avg_res_times[i,j] = avg_res
         utilize_servers[i,j] = server_util
-        max_speed[i,j] = blind_d[i]/avg_res
+        max_speed[i,j] = blind_d[i]/(avg_res/1000) # in meter per second
         max_speed[i,j] = round(max_speed[i,j], 3)
 
 
@@ -93,16 +95,16 @@ dff4= pd.DataFrame(max_speed)
 
 print(dff4)
 
-dff1.to_csv('percentage_deadline_miss_avg.csv')
-dff2.to_csv('avg_response_avg.csv')
-dff3.to_csv('server_utilization_avg.csv')
-dff4.to_csv('max_safe_speed_avg.csv')
+dff1.to_csv('percentage_deadline_miss_peak.csv')
+dff2.to_csv('avg_response_peak.csv')
+dff3.to_csv('server_utilization_peak.csv')
+dff4.to_csv('max_safe_speed_peak.csv')
 
 
-print("percentage of deadline_miss:", perc_deadline_miss)
-print("avg response time:", avg_res_times)
-print("server utilization:", utilize_servers)
-print("max_safe_speed:", max_speed)        
+print("percentage of deadline_miss (peak):", perc_deadline_miss)
+print("avg response time (peak):", avg_res_times)
+print("server utilization(peak):", utilize_servers)
+print("max_safe_speed(peak):", max_speed)        
 
 
 
