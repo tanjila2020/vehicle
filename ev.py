@@ -11,8 +11,8 @@ import pandas as pd
 
 # parameter value
 # average configuration
-no_of_ap =151# parameter to calculate data size from sanaz paper
-no_of_servers =269
+no_of_ap =103# parameter to calculate data size from sanaz paper
+no_of_servers =227
 blind_distance = 2#in meters
 # peak configuration
 # no_of_ap = 177# parameter to calculate data size from sanaz paper
@@ -203,7 +203,9 @@ the job schedule should be like below:
 '''
 
 #span = period*temp_no_of_vehicles
-span = 70000
+span = 60000
+#for test
+# span = sum([vehicle.deadline for vehicle in vehicle_list])
 #span = sum([vehicle.period for vehicle in vehicle_list])
 queue = []
 queued_vehicles = namedtuple(
