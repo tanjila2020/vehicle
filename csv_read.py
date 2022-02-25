@@ -66,8 +66,8 @@ for h in hour:
         avg_speeds.append(avg_speed)
 
 
-# print("avg speed array is:", avg_speeds)            
-# print("avg no of vehicle array is", avg_no_of_vehicles)   
+print("avg speed array is:", avg_speeds)            
+print("avg no of vehicle array is", avg_no_of_vehicles)   
 
 ############ to calc avg_speed in each hour#####
 
