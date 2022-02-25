@@ -69,7 +69,7 @@ for h in hour:
 print("avg speed array is:", avg_speeds)            
 print("avg no of vehicle array is", avg_no_of_vehicles)   
 
-############ to calc avg_speed in each hour#####
+############ to calc avg_speed in each hour##############
 
 
 
