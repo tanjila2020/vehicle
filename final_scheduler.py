@@ -18,7 +18,7 @@ import random
 from  csv_read import times, avg_no_of_vehicles, avg_speeds
 
 def final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicle, deadline):
-    temp_no_of_vehicles = int(np.round(avg_no_of_vehicle/no_of_server))#finding the no of vehicles per server
+    temp_no_of_vehicles = int(math.ceil(avg_no_of_vehicle/no_of_server))#finding the no of vehicles per server
     if temp_no_of_vehicles == 0:
         temp_no_of_vehicles=1
     #temp_no_of_vehicles = 2
@@ -66,12 +66,17 @@ def final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time,
     for vehicle in vehicle_list:
         period[vehicle.name] = 0
         end[vehicle.name] = vehicle.transfer_time
-
+    flag=0
     while (current_time < span):
+        if flag == 1:
+            break
         for vehicle in vehicle_list:
             vehicle_deadline = period[vehicle.name] + vehicle.deadline
             # start_time = current_time +  vehicle.transfer_time
             start_time = max(current_time, end[vehicle.name])
+            if start_time > span-edge_execution_time:
+                flag=1
+                break
             end_time = start_time + vehicle.edge_exe_time
             prev_end_time = end[vehicle.name] - vehicle.transfer_time
             end[vehicle.name] = vehicle.transfer_time + end_time
@@ -129,7 +134,7 @@ def final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time,
     #total_transfer_time = (total_jobs - total_jobs_dropped) * transfer_time
     server_utilization = total_demand/span
     if no_of_server > avg_no_of_vehicle:
-        server_utilization= server_utilization/no_of_server
+        server_utilization= (avg_no_of_vehicle * server_utilization)/no_of_server
     
     if server_utilization > 1:
         server_utilization = 1
