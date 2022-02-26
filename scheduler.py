@@ -69,11 +69,17 @@ def scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_n
         period[vehicle.name] = 0
         end[vehicle.name] = vehicle.transfer_time
 
+    flag=0
     while (current_time < span):
+        if flag == 1:
+            break
         for vehicle in vehicle_list:
             vehicle_deadline = period[vehicle.name] + vehicle.deadline
             # start_time = current_time +  vehicle.transfer_time
             start_time = max(current_time, end[vehicle.name])
+            if start_time > span-edge_execution_time:
+                flag=1
+                break
             end_time = start_time + vehicle.edge_exe_time
             prev_end_time = end[vehicle.name] - vehicle.transfer_time
             end[vehicle.name] = vehicle.transfer_time + end_time

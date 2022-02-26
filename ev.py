@@ -45,7 +45,7 @@ print("local execution time:", local_execution_time)
 
 # read vehicle data from csv
 # df = pd.read_csv('first_output.csv', index_col='#')
-df = pd.read_csv('5am.csv')
+df = pd.read_csv('10am.csv')
 csv_length = len(df)
 avg_speed = df['speed'].mean() 
 #avg_speed = 9
@@ -227,13 +227,23 @@ ignored_jobs_df = pd.DataFrame({"name": [], "job": []})
 for vehicle in vehicle_list:
     period[vehicle.name] = 0
     end[vehicle.name] = vehicle.transfer_time
-
+# start_time = 0
+flag=0
 while (current_time < span):
+    if flag ==1:
+        break
+    
+# while (start_time < span-edge_execution_time):
     for vehicle in vehicle_list:
         vehicle_deadline = period[vehicle.name] + vehicle.deadline
         # start_time = current_time +  vehicle.transfer_time
         start_time = max(current_time, end[vehicle.name])
+        print("start time:", start_time)
+        if start_time > span-edge_execution_time:
+            flag=1
+            break
         end_time = start_time + vehicle.edge_exe_time
+        print("end time", end_time)
         prev_end_time = end[vehicle.name] - vehicle.transfer_time
         end[vehicle.name] = vehicle.transfer_time + end_time
 
@@ -269,7 +279,7 @@ while (current_time < span):
 
     job_no += 1
 
-#print(*queue, sep='\n')
+print(*queue, sep='\n')
 
 #print(response_time_df)
 average_response_time = response_time_df[['name', 'response_time']].groupby(['name']).mean()
