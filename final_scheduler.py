@@ -119,6 +119,7 @@ def final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time,
     
     average_response_time = response_time_df[['name', 'response_time']].groupby(['name']).mean()
     total_avg_res_time = response_time_df['response_time'].mean()
+    max_response_time = response_time_df['response_time'].max()
     # response_time_df.loc[(response_time_df['name'] == 'v5') & (response_time_df['job_no'] == 5.0)]
     # print(ignored_jobs_df)
     ignored_job_count = ignored_jobs_df.groupby(['name']).size().reset_index(name='jobs_dropped')
@@ -155,4 +156,4 @@ def final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time,
     print("----end----")
     #print('max safe speed:', max_safe_speed)
 
-    return percent_deadline_missed_jobs, total_avg_res_time, server_utilization
+    return percent_deadline_missed_jobs, total_avg_res_time, max_response_time, server_utilization

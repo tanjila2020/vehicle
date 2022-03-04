@@ -285,6 +285,8 @@ print(*queue, sep='\n')
 average_response_time = response_time_df[['name', 'response_time']].groupby(['name']).mean()
 #print('Average response time\n', average_response_time)
 total_avg_res_time = response_time_df['response_time'].mean()
+max_response_time = response_time_df['response_time'].max()
+print("max response time:", max_response_time)
 # response_time_df.loc[(response_time_df['name'] == 'v5') & (response_time_df['job_no'] == 5.0)]
 # print(ignored_jobs_df)
 ignored_job_count = ignored_jobs_df.groupby(['name']).size().reset_index(name='jobs_dropped')
