@@ -11,9 +11,9 @@ import pandas as pd
 
 # parameter value
 # average configuration
-no_of_ap =10# parameter to calculate data size from sanaz paper
-no_of_servers =30
-blind_distance = 8#in meters
+no_of_ap =3# parameter to calculate data size from sanaz paper
+no_of_servers =21
+blind_distance = 24#in meters
 # peak configuration
 # no_of_ap = 177# parameter to calculate data size from sanaz paper
 # no_of_servers = 121
