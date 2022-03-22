@@ -156,4 +156,5 @@ def final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time,
     print("----end----")
     #print('max safe speed:', max_safe_speed)
 
-    return percent_deadline_missed_jobs, total_avg_res_time, max_response_time, server_utilization
+    # return percent_deadline_missed_jobs, total_avg_res_time, max_response_time, server_utilization
+    return percent_deadline_missed_jobs, total_avg_res_time, max_response_time

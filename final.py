@@ -22,6 +22,7 @@ blind_d = [x for x in range(2, 17, 2)]
 deadlines = np.zeros((len(blind_d), len(times)))
 perc_deadline_miss = np.zeros((len(blind_d), len(times)))
 max_speed = np.zeros((len(blind_d), len(times))) 
+max_speed_avg = np.zeros((len(blind_d), len(times)))
 utilize_servers = np.zeros((len(blind_d), len(times))) 
 avg_res_times = np.zeros((len(blind_d), len(times)))
 max_res_times = np.zeros((len(blind_d), len(times)))
@@ -78,14 +79,19 @@ for i in range(0,(len(blind_d))):
         no_of_server = peak_sers[i]
         print("no of server,", no_of_server)
         # exit()
-        pers_d_miss, avg_res, max_res_time, server_util = final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicles[j], deadlines[i,j])
+        # pers_d_miss, avg_res, max_res_time, server_util = final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicles[j], deadlines[i,j])
+        pers_d_miss, avg_res, max_res_time= final_scheduling(no_of_ap, no_of_server, transfer_time, edge_execution_time, avg_no_of_vehicles[j], deadlines[i,j])
 
         perc_deadline_miss[i,j] = pers_d_miss
         avg_res_times[i,j] = avg_res
         max_res_times[i,j] = max_res_time
-        utilize_servers[i,j] = server_util
+        # utilize_servers[i,j] = server_util
         max_speed[i,j] = blind_d[i]/(max_res_time/1000) # in meter per second
         max_speed[i,j] = round(max_speed[i,j], 3)
+
+        max_speed_avg[i,j] = blind_d[i]/(avg_res_time/1000) # in meter per second
+        max_speed_avg[i,j] = round(max_speed_avg[i,j], 3)
+
 
 print("scheduler running done")
 #writing all the results in csv files for avg config
