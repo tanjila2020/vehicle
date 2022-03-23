@@ -89,7 +89,7 @@ for i in range(0,(len(blind_d))):
         max_speed[i,j] = blind_d[i]/(max_res_time/1000) # in meter per second
         max_speed[i,j] = round(max_speed[i,j], 3)
 
-        max_speed_avg[i,j] = blind_d[i]/(avg_res_time/1000) # in meter per second
+        max_speed_avg[i,j] = blind_d[i]/(avg_res/1000) # in meter per second
         max_speed_avg[i,j] = round(max_speed_avg[i,j], 3)
 
 
@@ -100,6 +100,7 @@ dff2= pd.DataFrame(avg_res_times)
 # dff3= pd.DataFrame(utilize_servers)
 dff4= pd.DataFrame(max_speed)
 dff5= pd.DataFrame(max_res_times)
+dff6= pd.DataFrame(max_speed_avg)
 
 
 
@@ -107,23 +108,33 @@ dff5= pd.DataFrame(max_res_times)
 # print(dff4)
 print("df making done")
 
-##for avg config
+#for avg config
 # dff1.to_csv('percentage_deadline_miss_avg.csv')
 # dff2.to_csv('avg_response_avg.csv')
-# dff4.to_csv('max_safe_speed_avg.csv')
+# dff4.to_csv('max_max_safe_speed_avg.csv')
 # dff5.to_csv('max_response_time_avg.csv')
+# dff6.to_csv('avg_max_safe_speed_avg.csv')
 
-##for peak config
+#for peak config
 dff1.to_csv('percentage_deadline_miss_peak.csv')
 dff2.to_csv('avg_response_peak.csv')
-dff4.to_csv('max_safe_speed_peak.csv')
+dff4.to_csv('max_max_safe_speed_peak.csv')
 dff5.to_csv('max_response_time_peak.csv')
+dff6.to_csv('avg_max_safe_speed_peak.csv')
+
+
+
+# dff1.to_csv('percentage_deadline_miss_peak.csv')
+# dff2.to_csv('avg_response_peak.csv')
+# dff4.to_csv('max_safe_speed_peak.csv')
+# dff5.to_csv('max_response_time_peak.csv')
 
 
 # print("percentage of deadline_miss (peak):", perc_deadline_miss)
 # print("avg response time (peak):", avg_res_times)
 # print("server utilization(avg) new:", utilize_servers)
-# print("max_safe_speed(peak):", max_speed)   
+# print("max_safe_speed(peak):", max_speed) 
+print("complete !!!!")  
      
 
 
