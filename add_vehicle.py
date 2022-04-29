@@ -14,12 +14,12 @@ from pyrsistent import v
 from final_scheduler import final_scheduling
 import time
 
-blind_d= 12
+blind_d= 14
 no_of_ap= 1
 no_of_server= 8
 extra = 100
-avg_no_of_vehicles= 250
-avg_speeds= 10.83 #in meter/sec
+avg_no_of_vehicles= 411
+avg_speeds= 10.31 #in meter/sec
 
 data_size= 1.8 #megabits
 bandwidth = 1000 #in megabit per sec
